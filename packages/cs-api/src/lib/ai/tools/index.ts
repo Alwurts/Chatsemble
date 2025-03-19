@@ -62,9 +62,9 @@ export const deepResearchTool = () =>
 
 			// Define research parameters
 			const params = {
-				maxDepth: 5, // Number of research iterations
-				timeLimit: 180, // Time limit in seconds
-				maxUrls: 15, // Maximum URLs to analyze
+				maxDepth: 3, // Number of research iterations
+				timeLimit: 60, // Time limit in seconds
+				maxUrls: 10, // Maximum URLs to analyze
 			};
 
 			// Run deep research
