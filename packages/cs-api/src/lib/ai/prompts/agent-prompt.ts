@@ -28,14 +28,12 @@ function getLanguageStyleExplanation(languageStyle: LanguageStyle): string {
 
 export function agentSystemPrompt({
 	agentConfig,
-	chatRoom,
+	chatRoomId,
+	threadId,
 }: {
 	agentConfig: typeof agentConfigT.$inferSelect;
-	chatRoom: {
-		id: string;
-		name: string;
-		threadId: number | null;
-	};
+	chatRoomId: string;
+	threadId: number | null;
 }) {
 	const toneExplanation = getToneExplanation(agentConfig.tone);
 	const verbosityExplanation = getVerbosityExplanation(agentConfig.verbosity);
@@ -107,9 +105,8 @@ export function agentSystemPrompt({
 </internal_reminder>
 
 <chat_room_info_context>
-    - chatRoomId: ${chatRoom.id}
-    - chatRoomName: ${chatRoom.name}
-    - threadId: ${chatRoom.threadId ?? "null"}
+    - chatRoomId: ${chatRoomId}
+    - threadId: ${threadId ?? "null"}
 </chat_room_info_context>
 `;
 }

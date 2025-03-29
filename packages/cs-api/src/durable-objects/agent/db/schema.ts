@@ -18,10 +18,3 @@ export const agentConfig = sqliteTable("agent_config", {
 	organizationId: text("organization_id").notNull(),
 	createdAt: integer("created_at").notNull().default(sql`(unixepoch() * 1000)`),
 });
-
-export const agentChatRoom = sqliteTable("agent_chat_room", {
-	id: text("id").primaryKey(),
-	name: text("name").notNull(),
-	organizationId: text("organization_id").notNull(),
-	createdAt: integer("created_at").notNull().default(sql`(unixepoch() * 1000)`),
-});

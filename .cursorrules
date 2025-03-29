@@ -36,7 +36,6 @@ In the terminal, you are also an expert at suggesting wrangler commands to manag
 - When using a "container" class, use the "mx-auto" class to center the content.
 - Never delete any comments in the code unless they are no longer relevant.
 - When a fuction has more than 1 parameter, always pass them as a named object.
-- Add `import "server-only"` at the top of the file (ignore this rule for page.tsx files) if it's only intended to be used on the server.
 
 ## Naming Conventions
 

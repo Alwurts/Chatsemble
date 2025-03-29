@@ -103,7 +103,6 @@ export class AgentDurableObject extends DurableObject<Env> {
 	}) {
 		console.log("[formulateResponse] chatRoomId", chatRoomId);
 		const agentConfig = await this.dbServices.getAgentConfig();
-		const chatRoom = await this.dbServices.getChatRoom(chatRoomId);
 
 		const openAIClient = createOpenAI({
 			baseURL: this.env.AI_GATEWAY_OPENAI_URL,
@@ -129,11 +128,8 @@ export class AgentDurableObject extends DurableObject<Env> {
 
 		const systemPrompt = agentSystemPrompt({
 			agentConfig,
-			chatRoom: {
-				id: chatRoom.id,
-				name: chatRoom.name,
-				threadId: sendMessageThreadId,
-			},
+			chatRoomId: chatRoomId,
+			threadId: sendMessageThreadId,
 		});
 
 		const messages = agentMessagesToContextCoreMessages(
@@ -200,15 +196,5 @@ export class AgentDurableObject extends DurableObject<Env> {
 		agentConfigData: Parameters<typeof this.dbServices.updateAgentConfig>[0],
 	) {
 		await this.dbServices.updateAgentConfig(agentConfigData);
-	}
-
-	async addChatRoom(
-		chatRoom: Parameters<typeof this.dbServices.addChatRoom>[0],
-	) {
-		await this.dbServices.addChatRoom(chatRoom);
-	}
-
-	async deleteChatRoom(chatRoomId: string) {
-		await this.dbServices.deleteChatRoom(chatRoomId);
 	}
 }

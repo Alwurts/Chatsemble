@@ -15,7 +15,7 @@ const app = new Hono<HonoContextWithAuth>()
 		"/:chatRoomId/members",
 		zValidator("json", createChatRoomMemberSchema),
 		async (c) => {
-			const { CHAT_DURABLE_OBJECT, AGENT_DURABLE_OBJECT } = c.env;
+			const { CHAT_DURABLE_OBJECT } = c.env;
 			const chatRoomId = c.req.param("chatRoomId");
 			const db = c.get("db");
 			const session = c.get("session");
@@ -161,22 +161,11 @@ const app = new Hono<HonoContextWithAuth>()
 				throw new Error("Failed to add member");
 			}
 
-			if (type === "agent") {
-				const agentId = AGENT_DURABLE_OBJECT.idFromString(member.memberId);
-				const agent = AGENT_DURABLE_OBJECT.get(agentId);
-
-				await agent.addChatRoom({
-					id: room.id,
-					name: room.name,
-					organizationId: activeOrganizationId,
-				});
-			}
-
 			return c.json({ success: true });
 		},
 	)
 	.delete("/:chatRoomId/members/:memberId", async (c) => {
-		const { CHAT_DURABLE_OBJECT, AGENT_DURABLE_OBJECT } = c.env;
+		const { CHAT_DURABLE_OBJECT } = c.env;
 		const chatRoomId = c.req.param("chatRoomId");
 		const memberId = c.req.param("memberId");
 		const db = c.get("db");
@@ -243,13 +232,6 @@ const app = new Hono<HonoContextWithAuth>()
 		const chatRoomDoId = CHAT_DURABLE_OBJECT.idFromString(chatRoomId);
 		const chatRoomDo = CHAT_DURABLE_OBJECT.get(chatRoomDoId);
 		await chatRoomDo.removeMembers([memberId]);
-
-		// If it's an agent, remove the chat room from the agent
-		if (member.type === "agent") {
-			const agentId = AGENT_DURABLE_OBJECT.idFromString(memberId);
-			const agent = AGENT_DURABLE_OBJECT.get(agentId);
-			await agent.deleteChatRoom(chatRoomId);
-		}
 
 		return c.json({ success: true });
 	});

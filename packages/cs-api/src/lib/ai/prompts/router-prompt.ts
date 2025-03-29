@@ -1,5 +1,4 @@
 import type { Agent, ChatRoom, ChatRoomMessage } from "@/cs-shared";
-import "server-only";
 import { chatRoomMessagesToAgentMessages } from "../ai-utils";
 
 interface RouterPromptArgs {

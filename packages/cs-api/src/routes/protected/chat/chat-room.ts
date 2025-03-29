@@ -156,21 +156,6 @@ const chatRoom = new Hono<HonoContextWithAuth>()
 			await chatRoomDo.addMembers(membersToAddDetails);
 		}
 
-		// Add chat room to agents
-
-		if (newAgentMemberDetails.length > 0) {
-			for (const member of newAgentMemberDetails) {
-				const agentId = c.env.AGENT_DURABLE_OBJECT.idFromString(member.id);
-				const agent = c.env.AGENT_DURABLE_OBJECT.get(agentId);
-
-				await agent.addChatRoom({
-					id: newChatRoom.id,
-					name: newChatRoom.name,
-					organizationId: activeOrganizationId,
-				});
-			}
-		}
-
 		return c.json({ roomId: chatRoomDoId.toString() });
 	})
 	.get("/", async (c) => {
@@ -237,14 +222,6 @@ const chatRoom = new Hono<HonoContextWithAuth>()
 
 		const chatRoomDoId = c.env.CHAT_DURABLE_OBJECT.idFromString(chatRoom.id);
 		const chatRoomDo = c.env.CHAT_DURABLE_OBJECT.get(chatRoomDoId);
-		const members = await chatRoomDo.getMembers();
-		const agentMembers = members.filter((member) => member.type === "agent");
-
-		for (const member of agentMembers) {
-			const agentDoId = c.env.AGENT_DURABLE_OBJECT.idFromString(member.id);
-			const agentDo = c.env.AGENT_DURABLE_OBJECT.get(agentDoId);
-			await agentDo.deleteChatRoom(chatRoom.id);
-		}
 
 		await chatRoomDo.delete();
 
