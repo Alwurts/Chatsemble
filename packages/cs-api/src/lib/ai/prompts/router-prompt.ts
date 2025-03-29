@@ -36,9 +36,31 @@ Evaluate the provided messages (including context and the latest message) and de
 
 export function routeMessageToAgentUserPrompt({
 	newMessages,
+	contextMessages,
 }: {
 	newMessages: ChatRoomMessage[];
 	contextMessages: ChatRoomMessage[];
 }): string {
-	return `Evaluate the following messages and decide which agent(s) (if any) are most relevant to respond. Consider the context and the new message(s).\n\nMessages:\n${JSON.stringify(chatRoomMessagesToAgentMessages(newMessages), null, 2)}`;
+	// Prepare JSON strings for context and new messages
+	const contextMessagesJson = JSON.stringify(
+		chatRoomMessagesToAgentMessages(contextMessages),
+		null,
+		2,
+	);
+	const newMessagesJson = JSON.stringify(
+		chatRoomMessagesToAgentMessages(newMessages),
+		null,
+		2,
+	);
+
+	// Construct the prompt with clear instructions
+	return `Evaluate the **new messages** below to decide which agent(s) (if any) should respond.
+Use the **context messages** *only* for background understanding. Mentions or requests in the context messages should generally be ignored for routing unless directly relevant to the new messages.
+The primary decision should be based on the content and potential agent mentions within the **new messages**.
+
+Context Messages (for background understanding only):
+${contextMessagesJson}
+
+New Messages (Primary focus for routing decision):
+${newMessagesJson}`;
 }

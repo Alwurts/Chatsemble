@@ -36,7 +36,7 @@ export function agentMessagesToContextCoreMessages(
 			role: "system",
 			content: `
 			<conversation_history_context>
-			${JSON.stringify(agentMessagesContext)}
+			${JSON.stringify(agentMessagesContext, null, 2)}
 			</conversation_history_context>
 			`,
 		},
@@ -44,7 +44,7 @@ export function agentMessagesToContextCoreMessages(
 			role: "user",
 			content: `
 			<new_messages_to_process>
-			${JSON.stringify(agentMessagesNew)}
+			${JSON.stringify(agentMessagesNew, null, 2)}
 			</new_messages_to_process>
 			`,
 		},
