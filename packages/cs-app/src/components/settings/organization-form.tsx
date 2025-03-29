@@ -23,7 +23,7 @@ export function OrganizationForm() {
 
 	useEffect(() => {
 		if (activeOrganization.data) {
-			// @ts-expect-error // TODO: fix this
+			// @ts-expect-error
 			setOptimisticOrg(activeOrganization.data);
 		}
 	}, [activeOrganization.data]);

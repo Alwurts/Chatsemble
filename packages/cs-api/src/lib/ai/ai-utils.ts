@@ -5,7 +5,7 @@ import {
 	type ChatRoomMessagePartial,
 } from "@/cs-shared";
 import type { CoreMessage } from "ai";
-import type { AgentMessage } from "../../durable-objects/agent/types";
+import type { AgentMessage } from "@/cs-shared";
 
 export function chatRoomMessagesToAgentMessages(
 	messages: ChatRoomMessage[],

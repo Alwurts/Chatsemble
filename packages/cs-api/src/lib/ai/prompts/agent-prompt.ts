@@ -113,36 +113,3 @@ export function agentSystemPrompt({
 </chat_room_info_context>
 `;
 }
-
-export function checkIfMessagesAreRelevantSystemPrompt({
-	agentConfig,
-	chatRoom,
-}: {
-	agentConfig: typeof agentConfigT.$inferSelect;
-	chatRoom: {
-		name: string;
-	};
-}) {
-	return `
-<internal_reminder>
-    - You are a message checker for an AI agent named "${agentConfig.name}". Your job is to determine if the messages are relevant to the agent.
-    <rules>
-        1. If the last message was from the agent, they should not respond again
-        2. If the last message was from a user, and the agent has not responded to the user yet, the agent should respond
-        3. If the last message was from a user, and the agent has already responded to the user, the agent should not respond again
-    </rules>
-
-    <system_prompt_context>
-        The agent's system prompt is: "${agentConfig.description}"
-        This context helps you understand the agent's expertise and role.
-    </system_prompt_context>
-
-    <output_format>
-        Return "relevant" if the messages are relevant to the agent, and "irrelevant" if they are not.
-    </output_format>
-</internal_reminder>
-<chat_room_context>
-    - Chat room name: ${chatRoom.name}
-</chat_room_info>
-`;
-}

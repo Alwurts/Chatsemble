@@ -25,12 +25,3 @@ export const agentChatRoom = sqliteTable("agent_chat_room", {
 	organizationId: text("organization_id").notNull(),
 	createdAt: integer("created_at").notNull().default(sql`(unixepoch() * 1000)`),
 });
-
-export const agentChatRoomQueue = sqliteTable("agent_chat_room_queue", {
-	id: text("id").primaryKey(),
-	roomId: text("room_id").notNull(),
-	threadId: integer("thread_id"),
-	lastProcessedId: integer("last_processed_id"),
-	processAt: integer("process_at"),
-	createdAt: integer("created_at").notNull().default(sql`(unixepoch() * 1000)`),
-});

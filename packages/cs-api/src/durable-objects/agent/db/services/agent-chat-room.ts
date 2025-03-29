@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 // packages/cs-api/src/durable-objects/agent/db/agentChatRoomOperations.ts
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
-import { agentChatRoom, agentChatRoomQueue } from "../schema";
+import { agentChatRoom } from "../schema";
 
 export function createAgentChatRoomService(db: DrizzleSqliteDODatabase) {
 	return {
@@ -33,9 +33,6 @@ export function createAgentChatRoomService(db: DrizzleSqliteDODatabase) {
 
 		async deleteChatRoom(id: string) {
 			await db.delete(agentChatRoom).where(eq(agentChatRoom.id, id));
-			await db
-				.delete(agentChatRoomQueue)
-				.where(eq(agentChatRoomQueue.roomId, id));
 		},
 	};
 }

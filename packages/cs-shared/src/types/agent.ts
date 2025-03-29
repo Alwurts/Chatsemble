@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { ChatRoomMessage } from "./chat";
 
 export const toneOptions = [
 	"formal",
@@ -93,3 +94,13 @@ export interface AgentToolResult extends AgentToolPartial {
 }
 
 export type AgentToolUse = AgentToolCall | AgentToolResult;
+
+export type AgentMessage = {
+	content: ChatRoomMessage["content"];
+	toolUses: ChatRoomMessage["toolUses"];
+	member: {
+		id: ChatRoomMessage["member"]["id"];
+		name: ChatRoomMessage["member"]["name"];
+		type: ChatRoomMessage["member"]["type"];
+	};
+};
