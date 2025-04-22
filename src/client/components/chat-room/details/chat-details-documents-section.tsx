@@ -1,21 +1,21 @@
+import { ConfirmationDialog } from "@client/components/common/confirmation-dialog";
+import { DocumentViewerDialog } from "@client/components/document/document-viewer-dialog";
 import { useOrganizationConnectionContext } from "@client/components/providers/organization-connection-provider";
+import { Button } from "@client/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardHeader,
 	CardTitle,
 } from "@client/components/ui/card";
-import { FileText } from "lucide-react";
-import { DocumentViewerDialog } from "@client/components/document/document-viewer-dialog";
 import { ScrollArea } from "@client/components/ui/scroll-area";
-import { Button } from "@client/components/ui/button";
-import { Trash2 } from "lucide-react";
-import { ConfirmationDialog } from "@client/components/common/confirmation-dialog";
 import { honoClient } from "@client/lib/api-client";
+import type { Document } from "@shared/types/document";
 import { useMutation } from "@tanstack/react-query";
+import { FileText } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import type { Document } from "@shared/types/document";
 
 export function ChatDetailsDocumentsSection() {
 	const {

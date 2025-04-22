@@ -13,11 +13,11 @@ import {
 	TabsList,
 	TabsTrigger,
 } from "@client/components/ui/tabs";
-import { Calendar, Info, UserPlus, FileText } from "lucide-react";
+import { Calendar, FileText, Info, UserPlus } from "lucide-react";
+import { ChatDetailsDocumentsSection } from "./chat-details-documents-section";
 import { ChatDetailsMembersSection } from "./chat-details-members-section";
 import { ChatDetailsSection } from "./chat-details-section";
 import { ChatDetailsWorkflowsSection } from "./chat-details-workflows-section";
-import { ChatDetailsDocumentsSection } from "./chat-details-documents-section";
 
 type ChatDetailsDialogView = "details" | "members" | "workflows" | "documents";
 

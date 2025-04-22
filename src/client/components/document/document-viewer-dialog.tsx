@@ -1,14 +1,14 @@
+import { CopyButton } from "@client/components/common/copy-button";
 import { Button } from "@client/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
 	DialogTrigger,
 } from "@client/components/ui/dialog";
-import { FileText } from "lucide-react";
+import { MarkdownContent } from "@client/components/ui/markdown-content";
 import { ScrollArea } from "@client/components/ui/scroll-area";
 import { Separator } from "@client/components/ui/separator";
-import { MarkdownContent } from "@client/components/ui/markdown-content";
-import { CopyButton } from "@client/components/common/copy-button";
+import { FileText } from "lucide-react";
 
 export function DocumentViewerDialog({
 	title,

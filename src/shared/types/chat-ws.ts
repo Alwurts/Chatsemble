@@ -4,8 +4,8 @@ import type {
 	ChatRoomMessage,
 	ChatRoomMessagePartial,
 } from "@shared/types/chat";
-import type { Workflow } from "@shared/types/workflow";
 import type { Document } from "@shared/types/document";
+import type { Workflow } from "@shared/types/workflow";
 
 export type WsMessageOrganizationInitRequest = {
 	type: "organization-init-request";

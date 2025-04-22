@@ -6,6 +6,7 @@ import {
 } from "@server/ai/prompts/agent/workflow-prompt";
 import { routeMessageToAgentSystemPrompt } from "@server/ai/prompts/router-prompt";
 import { agentToolSetKeys } from "@server/ai/tools";
+import { createDocumentTool } from "@server/ai/tools/create-document-tool";
 import { createMessageThreadTool } from "@server/ai/tools/create-thread-tool";
 import { deepResearchTool } from "@server/ai/tools/deep-search-tool";
 import { scheduleWorkflowTool } from "@server/ai/tools/schedule-workflow-tool";
@@ -31,7 +32,6 @@ import {
 import { z } from "zod";
 import type { ChatRooms } from "./chat-room";
 import type { ChatRoomDbServices } from "./db/services";
-import { createDocumentTool } from "@server/ai/tools/create-document-tool";
 
 interface AgentsDependencies {
 	dbServices: ChatRoomDbServices;

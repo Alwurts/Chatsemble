@@ -1,6 +1,6 @@
 import type { Document } from "@shared/types";
-import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { eq } from "drizzle-orm";
+import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { document } from "../schema";
 
 export function createDocumentService(db: DrizzleSqliteDODatabase) {

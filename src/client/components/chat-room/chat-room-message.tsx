@@ -17,10 +17,10 @@ import {
 	ToolInvocationResult,
 } from "@client/components/ui/tool-invocation";
 import type { ChatRoomMessage as ChatRoomMessageType } from "@shared/types";
+import { CreateDocumentTool } from "../tools/create-document-tool";
 import { ScheduledWorkflowTool } from "../tools/scheduled-workflow-tool";
 import { ToolInvocationSourcesList } from "../tools/sources-tool";
 import { Separator } from "../ui/separator";
-import { CreateDocumentTool } from "../tools/create-document-tool";
 
 export function ChatRoomMessage({
 	message,

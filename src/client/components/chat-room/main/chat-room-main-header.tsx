@@ -12,7 +12,7 @@ import {
 	TooltipTrigger,
 } from "@client/components/ui/tooltip";
 import { cn } from "@client/lib/utils";
-import { Calendar, MessagesSquare, Users, FileText } from "lucide-react";
+import { Calendar, FileText, MessagesSquare, Users } from "lucide-react";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import {
 	ChatDetailsDialog,

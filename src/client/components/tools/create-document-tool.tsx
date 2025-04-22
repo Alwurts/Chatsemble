@@ -4,13 +4,13 @@ import {
 	ToolInvocationHeader,
 	ToolInvocationName,
 } from "@client/components/ui/tool-invocation";
+import type {
+	CreateDocumentArgs,
+	CreateDocumentResult,
+} from "@server/ai/tools/create-document-tool";
 import type { AgentToolUse } from "@shared/types";
 import { FileText } from "lucide-react";
 import { DocumentViewerDialog } from "../document/document-viewer-dialog";
-import type {
-	CreateDocumentResult,
-	CreateDocumentArgs,
-} from "@server/ai/tools/create-document-tool";
 
 export function CreateDocumentTool({ toolUse }: { toolUse: AgentToolUse }) {
 	const isCall = toolUse.type === "tool-call";
