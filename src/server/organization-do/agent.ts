@@ -30,6 +30,7 @@ import {
 import { z } from "zod";
 import type { ChatRooms } from "./chat-room";
 import type { ChatRoomDbServices } from "./db/services";
+import { createDocumentTool } from "@server/ai/tools/create-document-tool";
 
 interface AgentsDependencies {
 	dbServices: ChatRoomDbServices;
@@ -334,6 +335,12 @@ export class Agents {
 						console.log("[formulateResponse] onNewThread", newThreadId);
 						sendMessageThreadId = newThreadId;
 					},
+				}),
+
+				createDocument: createDocumentTool({
+					createDocument: this.deps.dbServices.createDocument,
+					roomId: chatRoomId,
+					agentId,
 				}),
 			};
 		};

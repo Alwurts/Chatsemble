@@ -1,3 +1,4 @@
+import type { createDocumentTool } from "./create-document-tool";
 import type { createMessageThreadTool } from "./create-thread-tool";
 import type { deepResearchTool } from "./deep-search-tool";
 import type { scheduleWorkflowTool } from "./schedule-workflow-tool";
@@ -10,6 +11,7 @@ export type AgentToolSet = {
 	webCrawl: ReturnType<typeof webCrawlerTool>;
 	createMessageThread: ReturnType<typeof createMessageThreadTool>;
 	scheduleWorkflow: ReturnType<typeof scheduleWorkflowTool>;
+	createDocument: ReturnType<typeof createDocumentTool>;
 };
 
 export const agentToolSetKeys: (keyof AgentToolSet)[] = [
@@ -18,4 +20,5 @@ export const agentToolSetKeys: (keyof AgentToolSet)[] = [
 	"webCrawl",
 	"createMessageThread",
 	"scheduleWorkflow",
+	"createDocument",
 ];

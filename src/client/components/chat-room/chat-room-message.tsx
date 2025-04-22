@@ -20,6 +20,7 @@ import type { ChatRoomMessage as ChatRoomMessageType } from "@shared/types";
 import { ScheduledWorkflowTool } from "../tools/scheduled-workflow-tool";
 import { ToolInvocationSourcesList } from "../tools/sources-tool";
 import { Separator } from "../ui/separator";
+import { CreateDocumentTool } from "../tools/create-document-tool";
 
 export function ChatRoomMessage({
 	message,
@@ -98,6 +99,10 @@ export function ChatRoomMessage({
 
 						if (toolUse.toolName === "scheduleWorkflow") {
 							return <ScheduledWorkflowTool toolUse={toolUse} />;
+						}
+
+						if (toolUse.toolName === "createDocument") {
+							return <CreateDocumentTool toolUse={toolUse} />;
 						}
 
 						return (

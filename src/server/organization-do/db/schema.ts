@@ -21,6 +21,8 @@ import {
 } from "drizzle-orm/sqlite-core";
 import { nanoid } from "nanoid";
 
+// TODO: Check if i should index some things
+
 export const chatRoom = sqliteTable("chat_room", {
 	id: text("id")
 		.primaryKey()
@@ -39,7 +41,7 @@ export const chatRoomMember = sqliteTable(
 		id: text("id").notNull(), // User ID or Agent ID
 		roomId: text("room_id")
 			.notNull()
-			.references(() => chatRoom.id),
+			.references(() => chatRoom.id, { onDelete: "cascade" }),
 		type: text("type").$type<ChatRoomMemberType>().notNull(),
 		role: text("role").$type<ChatRoomMemberRole>().notNull(),
 		name: text("name").notNull(),
@@ -71,7 +73,7 @@ export const chatMessage = sqliteTable("chat_message", {
 	}).$type<ChatMessageThreadMetadata>(),
 	roomId: text("room_id")
 		.notNull()
-		.references(() => chatRoom.id),
+		.references(() => chatRoom.id, { onDelete: "cascade" }),
 	threadId: integer("thread_id"),
 });
 
@@ -98,7 +100,9 @@ export const workflows = sqliteTable("workflows", {
 		.primaryKey()
 		.$defaultFn(() => nanoid(36)), // Workflow unique ID
 	agentId: text("agent_id").notNull(),
-	chatRoomId: text("chat_room_id").notNull(),
+	chatRoomId: text("chat_room_id")
+		.notNull()
+		.references(() => chatRoom.id, { onDelete: "cascade" }),
 	goal: text("goal").notNull(),
 	steps: text("steps", { mode: "json" }).$type<WorkflowSteps>().notNull(),
 	scheduleExpression: text("schedule_expression").notNull(), // e.g., CRON or ISO
@@ -108,4 +112,22 @@ export const workflows = sqliteTable("workflows", {
 	isRecurring: integer("is_recurring", { mode: "boolean" }).notNull(),
 	createdAt: integer("created_at").notNull().default(sql`(unixepoch() * 1000)`),
 	updatedAt: integer("updated_at").notNull().default(sql`(unixepoch() * 1000)`),
+});
+
+export const document = sqliteTable("document", {
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => nanoid(36)),
+	roomId: text("room_id")
+		.notNull()
+		.references(() => chatRoom.id, { onDelete: "no action" }),
+	title: text("title").notNull(),
+	content: text("content").notNull(),
+	createdAt: integer("created_at", { mode: "number" })
+		.notNull()
+		.default(sql`(unixepoch() * 1000)`),
+	createdByMemberId: text("created_by_member_id").notNull(),
+	createdByMemberType: text("created_by_member_type")
+		.$type<ChatRoomMemberType>()
+		.notNull(),
 });
