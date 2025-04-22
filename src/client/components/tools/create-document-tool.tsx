@@ -7,15 +7,10 @@ import {
 import type { AgentToolUse } from "@shared/types";
 import { FileText } from "lucide-react";
 import { DocumentViewerDialog } from "../document/document-viewer-dialog";
-
-type CreateDocumentResult =
-	| { success: true; documentId: string; title: string }
-	| { success: false; error: string };
-
-type CreateDocumentArgs = {
-	title: string;
-	content: string;
-};
+import type {
+	CreateDocumentResult,
+	CreateDocumentArgs,
+} from "@server/ai/tools/create-document-tool";
 
 export function CreateDocumentTool({ toolUse }: { toolUse: AgentToolUse }) {
 	const isCall = toolUse.type === "tool-call";

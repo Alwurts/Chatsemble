@@ -4,6 +4,28 @@ import { tool } from "ai";
 import { CronExpressionParser } from "cron-parser";
 import { z } from "zod";
 
+const scheduleWorkflowArgsSchema = z.object({
+	scheduleExpression: z
+		.string()
+		.describe(
+			"The schedule (e.g., Date string ending with 'Z' like '2025-04-06T12:00:00Z' for one-off, CRON string like '0 9 * * 1' for recurring).",
+		),
+	goal: z
+		.string()
+		.describe(
+			"The goal of the workflow, In this goal DO NOT include information about schedule like 'every Monday at 9am'.",
+		),
+	steps: z
+		.array(workflowStepSchema)
+		.describe("The JSON object defining the steps of the workflow."),
+});
+
+export type ScheduleWorkflowArgs = z.infer<typeof scheduleWorkflowArgsSchema>;
+
+export type ScheduleWorkflowResult =
+	| { success: true; workflowId: string; nextRun?: string }
+	| { success: false; error: string };
+
 export const scheduleWorkflowTool = ({
 	createWorkflow,
 	chatRoomId,
@@ -18,22 +40,12 @@ export const scheduleWorkflowTool = ({
 	tool({
 		description:
 			"Schedules a multi-step workflow to be executed at a specified time or recurring interval.",
-		parameters: z.object({
-			scheduleExpression: z
-				.string()
-				.describe(
-					"The schedule (e.g., Date string ending with 'Z' like '2025-04-06T12:00:00Z' for one-off, CRON string like '0 9 * * 1' for recurring).",
-				),
-			goal: z
-				.string()
-				.describe(
-					"The goal of the workflow, In this goal DO NOT include information about schedule like 'every Monday at 9am'.",
-				),
-			steps: z
-				.array(workflowStepSchema)
-				.describe("The JSON object defining the steps of the workflow."),
-		}),
-		execute: async ({ scheduleExpression, goal, steps }) => {
+		parameters: scheduleWorkflowArgsSchema,
+		execute: async ({
+			scheduleExpression,
+			goal,
+			steps,
+		}): Promise<ScheduleWorkflowResult> => {
 			try {
 				let nextExecutionTime: number;
 				let isRecurring: boolean;

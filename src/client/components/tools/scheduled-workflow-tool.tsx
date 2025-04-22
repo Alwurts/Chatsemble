@@ -4,17 +4,11 @@ import {
 	ToolInvocationHeader,
 	ToolInvocationName,
 } from "@client/components/ui/tool-invocation";
+import type {
+	ScheduleWorkflowArgs,
+	ScheduleWorkflowResult,
+} from "@server/ai/tools/schedule-workflow-tool";
 import type { AgentToolUse } from "@shared/types";
-
-type ScheduleWorkflowResult =
-	| { success: true; workflowId: string; nextRun?: string }
-	| { success: false; error: string }; // TODO: This types should come from the backend
-
-type ScheduleWorkflowArgs = {
-	scheduleExpression: string;
-	goal: string;
-	steps: { stepId: string; description: string; toolName?: string | null }[];
-};
 
 export function ScheduledWorkflowTool({ toolUse }: { toolUse: AgentToolUse }) {
 	const isCall = toolUse.type === "tool-call";
