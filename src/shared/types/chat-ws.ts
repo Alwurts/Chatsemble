@@ -5,6 +5,7 @@ import type {
 	ChatRoomMessagePartial,
 } from "@shared/types/chat";
 import type { Workflow } from "@shared/types/workflow";
+import type { Document } from "@shared/types/document";
 
 export type WsMessageOrganizationInitRequest = {
 	type: "organization-init-request";
@@ -46,6 +47,7 @@ export type WsMessageChatRoomInitResponse = {
 	members: ChatRoomMember[];
 	room: ChatRoom;
 	workflows: Workflow[];
+	documents: Document[];
 };
 
 export type WsMessageChatRoomThreadInitResponse = {
@@ -80,6 +82,12 @@ export type WsMessageChatRoomMembersUpdate = {
 	members: ChatRoomMember[];
 };
 
+export type WsMessageChatRoomDocumentsUpdate = {
+	type: "chat-room-documents-update";
+	roomId: string;
+	documents: Document[];
+};
+
 export type WsChatOutgoingMessage =
 	| WsMessageOrganizationInitResponse
 	| WsMessageChatRoomsUpdate
@@ -87,6 +95,7 @@ export type WsChatOutgoingMessage =
 	| WsMessageChatRoomMessageBroadcast
 	| WsMessageChatRoomThreadInitResponse
 	| WsMessageChatRoomWorkflowsUpdate
-	| WsMessageChatRoomMembersUpdate;
+	| WsMessageChatRoomMembersUpdate
+	| WsMessageChatRoomDocumentsUpdate;
 
 export type WsChatMessage = WsChatIncomingMessage | WsChatOutgoingMessage;

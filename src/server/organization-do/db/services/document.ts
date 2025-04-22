@@ -1,5 +1,6 @@
 import type { Document } from "@shared/types";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
+import { eq } from "drizzle-orm";
 import { document } from "../schema";
 
 export function createDocumentService(db: DrizzleSqliteDODatabase) {
@@ -18,6 +19,27 @@ export function createDocumentService(db: DrizzleSqliteDODatabase) {
 			}
 
 			return newDocument;
+		},
+
+		getChatRoomDocuments: async (roomId: string) => {
+			const documents = await db
+				.select()
+				.from(document)
+				.where(eq(document.roomId, roomId));
+			return documents;
+		},
+
+		deleteDocument: async (documentId: string) => {
+			const deletedDocument = await db
+				.delete(document)
+				.where(eq(document.id, documentId))
+				.returning()
+				.get();
+
+			if (!deletedDocument) {
+				throw new Error("Failed to delete document");
+			}
+			return deletedDocument;
 		},
 	};
 }

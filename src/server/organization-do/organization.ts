@@ -18,6 +18,7 @@ import {
 	createChatRoomDbServices,
 } from "./db/services";
 import { Workflows } from "./workflow";
+import { Documents } from "./document";
 
 export class OrganizationDurableObject extends DurableObject<Env> {
 	storage: DurableObjectStorage;
@@ -27,6 +28,7 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 	agents: Agents;
 	workflows: Workflows;
 	chatRooms: ChatRooms;
+	documents: Documents;
 
 	constructor(ctx: DurableObjectState, env: Env) {
 		super(ctx, env);
@@ -53,6 +55,7 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 			dbServices: this.dbServices,
 			processIncomingChatMessage: this.processIncomingChatMessage,
 			createWorkflow: this.createWorkflow,
+			createDocument: this.createDocument,
 		});
 
 		this.workflows = new Workflows({
@@ -60,6 +63,11 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 			storage: this.storage,
 			broadcastWebSocketMessageToRoom: this.broadcastWebSocketMessageToRoom,
 			routeWorkflowToRelevantAgent: this.routeWorkflowToRelevantAgent,
+		});
+
+		this.documents = new Documents({
+			dbServices: this.dbServices,
+			broadcastWebSocketMessageToRoom: this.broadcastWebSocketMessageToRoom,
 		});
 
 		for (const webSocket of ctx.getWebSockets()) {
@@ -298,6 +306,12 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 		return this.workflows.createWorkflow(params);
 	};
 
+	private createDocument = async (
+		params: Parameters<ChatRoomDbServices["createDocument"]>[0],
+	) => {
+		return this.documents.createDocument(params);
+	};
+
 	// RPC services
 
 	async createChatRoom(
@@ -349,5 +363,9 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 
 	async deleteWorkflow(workflowId: string) {
 		return await this.workflows.deleteWorkflow(workflowId);
+	}
+
+	async deleteDocument(documentId: string) {
+		return await this.documents.deleteDocument(documentId);
 	}
 }

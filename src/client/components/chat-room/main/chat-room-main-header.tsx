@@ -12,7 +12,7 @@ import {
 	TooltipTrigger,
 } from "@client/components/ui/tooltip";
 import { cn } from "@client/lib/utils";
-import { Calendar, MessagesSquare, Users } from "lucide-react";
+import { Calendar, MessagesSquare, Users, FileText } from "lucide-react";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import {
 	ChatDetailsDialog,
@@ -44,6 +44,12 @@ export function ChatRoomMainHeader() {
 						<AppHeaderSeparator />
 						<ChatRoomWorkflows
 							setOpenChatDetailsDialog={setOpenChatDetailsDialog}
+							className="hidden md:flex"
+						/>
+						<AppHeaderSeparator />
+						<ChatRoomDocuments
+							setOpenChatDetailsDialog={setOpenChatDetailsDialog}
+							className="hidden md:flex"
 						/>
 						<AppHeaderSeparator />
 						<ChatRoomConnectionStatus />
@@ -116,8 +122,10 @@ function ChatRoomMembers({
 
 function ChatRoomWorkflows({
 	setOpenChatDetailsDialog,
+	className,
 }: {
 	setOpenChatDetailsDialog: Dispatch<SetStateAction<ChatDetailsDialogOpen>>;
+	className?: string;
 }) {
 	const {
 		mainChatRoomState: { workflows },
@@ -127,7 +135,7 @@ function ChatRoomWorkflows({
 		<Button
 			variant="ghost"
 			size="sm"
-			className="gap-2 h-7"
+			className={cn("gap-2 h-7", className)}
 			onClick={() =>
 				setOpenChatDetailsDialog({
 					view: "workflows",
@@ -137,6 +145,35 @@ function ChatRoomWorkflows({
 			<Calendar className="h-4 w-4" />
 			<span>{workflows.filter((workflow) => workflow.isActive).length}</span>
 			<span className="sr-only">Workflows</span>
+		</Button>
+	);
+}
+
+function ChatRoomDocuments({
+	setOpenChatDetailsDialog,
+	className,
+}: {
+	setOpenChatDetailsDialog: Dispatch<SetStateAction<ChatDetailsDialogOpen>>;
+	className?: string;
+}) {
+	const {
+		mainChatRoomState: { documents },
+	} = useOrganizationConnectionContext();
+
+	return (
+		<Button
+			variant="ghost"
+			size="sm"
+			className={cn("gap-2 h-7", className)}
+			onClick={() =>
+				setOpenChatDetailsDialog({
+					view: "documents",
+				})
+			}
+		>
+			<FileText className="h-4 w-4" />
+			<span>{documents.length}</span>
+			<span className="sr-only">Documents</span>
 		</Button>
 	);
 }

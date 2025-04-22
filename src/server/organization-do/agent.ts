@@ -17,6 +17,7 @@ import type {
 	ChatRoom,
 	ChatRoomMember,
 	ChatRoomMessage,
+	Document,
 	WorkflowPartial,
 } from "@shared/types";
 import {
@@ -40,6 +41,9 @@ interface AgentsDependencies {
 	createWorkflow: (
 		params: Parameters<ChatRoomDbServices["createAgentWorkflow"]>[0],
 	) => Promise<WorkflowPartial>;
+	createDocument: (
+		params: Parameters<ChatRoomDbServices["createDocument"]>[0],
+	) => Promise<Document>;
 }
 
 export class Agents {
@@ -338,7 +342,7 @@ export class Agents {
 				}),
 
 				createDocument: createDocumentTool({
-					createDocument: this.deps.dbServices.createDocument,
+					createDocument: this.deps.createDocument,
 					roomId: chatRoomId,
 					agentId,
 				}),

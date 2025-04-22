@@ -49,7 +49,7 @@ export class ChatRooms {
 			return;
 		}
 
-		const [room, members, messages, workflows] = await Promise.all([
+		const [room, members, messages, workflows, documents] = await Promise.all([
 			this.deps.dbServices.getChatRoomById(roomId),
 			this.deps.dbServices.getChatRoomMembers({ roomId }),
 			this.deps.dbServices.getChatRoomMessages({
@@ -57,6 +57,7 @@ export class ChatRooms {
 				threadId: null,
 			}),
 			this.deps.dbServices.getChatRoomWorkflows(roomId),
+			this.deps.dbServices.getChatRoomDocuments(roomId),
 		]);
 
 		if (!room) {
@@ -77,6 +78,7 @@ export class ChatRooms {
 				members,
 				room,
 				workflows,
+				documents,
 			},
 			session.userId,
 		);
