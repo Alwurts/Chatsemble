@@ -136,6 +136,7 @@ export function OrganizationForm() {
 												onClick={() => {
 													authClient.organization.removeMember({
 														memberIdOrEmail: member.id,
+														organizationId: optimisticOrg?.id,
 													});
 												}}
 											>
