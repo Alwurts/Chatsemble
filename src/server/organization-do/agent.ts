@@ -5,8 +5,7 @@ import {
 	getWorkflowAgentUserPrompt,
 } from "@server/ai/prompts/agent/workflow-prompt";
 import { routeMessageToAgentSystemPrompt } from "@server/ai/prompts/router-prompt";
-import { createMessageThreadTool } from "@server/ai/tools/create-thread-tool";
-import { webSearchTool } from "@server/ai/tools/web-search-tool";
+import { getAgentTools } from "@server/ai/tools";
 import { contextAndNewchatRoomMessagesToModelMessages } from "@server/ai/utils/message";
 import { createChatRoomMessagePartial } from "@shared/lib/chat";
 import type {
@@ -16,7 +15,8 @@ import type {
 	Document,
 	WorkflowPartial,
 } from "@shared/types";
-import type { ModelMessage, UIMessageStreamWriter } from "ai";
+import type { AiUIMessage } from "@shared/types/ai";
+import type { ModelMessage } from "ai";
 import {
 	createUIMessageStream,
 	generateObject,
@@ -294,7 +294,7 @@ export class Agents {
 		threadId: originalThreadId,
 		messages,
 		systemPrompt,
-		//removeTools,
+		// TODO: removeTools,
 	}: {
 		agentId: string;
 		chatRoomId: string;
@@ -305,30 +305,8 @@ export class Agents {
 	}) => {
 		console.log("[formulateResponse] chatRoomId", chatRoomId);
 
-		// const firstMessagePartial = createChatRoomMessagePartial({
-		// 	parts: [],
-		// 	mentions: [],
-		// 	threadId: originalThreadId,
-		// 	roomId: chatRoomId,
-		// 	status: "pending",
-		// });
-
-		// let currentMessage: ChatRoomMessage | null = await this.deps.processIncomingChatMessage({
-		// 	roomId: chatRoomId,
-		// 	memberId: agentId,
-		// 	message: firstMessagePartial,
-		// 	existingMessageId: null,
-		// 	notifyAgents: false,
-		// });
 		let currentMessage: ChatRoomMessage | null = null;
 		let currentThreadId: number | null = originalThreadId;
-
-		const agentToolSet = (dataStream: UIMessageStreamWriter) => {
-			return {
-				"web-search": webSearchTool(dataStream),
-				"create-message-thread": createMessageThreadTool(),
-			};
-		};
 
 		const openAIClient = createOpenAI({
 			baseURL: this.env.AI_GATEWAY_OPENAI_URL,
@@ -339,13 +317,14 @@ export class Agents {
 			const stream = createUIMessageStream({
 				execute: ({ writer }) => {
 					const result = streamText({
-						model: openAIClient("gpt-4.1"),
+						model: openAIClient("gpt-4.1-mini"),
 						system: systemPrompt,
 						messages,
-						tools: agentToolSet(writer),
+						tools: getAgentTools(writer),
 						stopWhen: stepCountIs(10),
 						experimental_transform: smoothStream({
-							chunking: "line",
+							chunking: "word",
+							delayInMs: 40,
 						}),
 					});
 
@@ -353,7 +332,7 @@ export class Agents {
 				},
 			});
 
-			for await (const uiMessage of readUIMessageStream({
+			for await (const uiMessage of readUIMessageStream<AiUIMessage>({
 				stream,
 			})) {
 				console.log(

@@ -5,8 +5,8 @@ import {
 	ToolInvocationName,
 } from "@client/components/ui/tool-invocation";
 import type {
-	ScheduleWorkflowArgs,
-	ScheduleWorkflowResult,
+	ScheduleWorkflowInput,
+	ScheduleWorkflowOutput,
 } from "@server/ai/tools/schedule-workflow-tool";
 import type { AgentToolUse } from "@shared/types";
 
@@ -18,9 +18,9 @@ export function ScheduledWorkflowTool({ toolUse }: { toolUse: AgentToolUse }) {
 			? "Scheduled Workflow"
 			: toolUse.toolName;
 
-	const args = toolUse.args as ScheduleWorkflowArgs | undefined;
+	const args = toolUse.args as ScheduleWorkflowInput | undefined;
 	const result = isResult
-		? (toolUse.result as ScheduleWorkflowResult | undefined)
+		? (toolUse.result as ScheduleWorkflowOutput | undefined)
 		: undefined;
 
 	return (
@@ -40,7 +40,7 @@ export function ScheduledWorkflowTool({ toolUse }: { toolUse: AgentToolUse }) {
 
 function ScheduledWorkflowToolCallView({
 	args,
-}: { args?: ScheduleWorkflowArgs }) {
+}: { args?: ScheduleWorkflowInput }) {
 	if (!args) {
 		return null;
 	}
@@ -78,7 +78,7 @@ function ScheduledWorkflowToolCallView({
 function ScheduledWorkflowToolResultView({
 	args,
 	result,
-}: { args?: ScheduleWorkflowArgs; result?: ScheduleWorkflowResult }) {
+}: { args?: ScheduleWorkflowInput; result?: ScheduleWorkflowOutput }) {
 	return (
 		<div className="flex flex-col gap-3">
 			{args && <ScheduledWorkflowToolCallView args={args} />}
@@ -89,7 +89,7 @@ function ScheduledWorkflowToolResultView({
 
 function ScheduledWorkflowResultList({
 	result,
-}: { result: ScheduleWorkflowResult | undefined }) {
+}: { result: ScheduleWorkflowOutput | undefined }) {
 	if (!result) {
 		return null;
 	}

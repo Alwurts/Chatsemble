@@ -1,24 +1,25 @@
-import type { createDocumentTool } from "./create-document-tool";
-import type { createMessageThreadTool } from "./create-thread-tool";
-import type { deepResearchTool } from "./deep-search-tool";
-import type { scheduleWorkflowTool } from "./schedule-workflow-tool";
-import type { webCrawlerTool } from "./web-crawler-tool";
-import type { webSearchTool } from "./web-search-tool";
+import type { UIMessageStreamWriter } from "ai";
+import { createMessageThreadTool } from "./create-thread-tool";
+import { webSearchTool } from "./web-search-tool";
 
-export type AgentToolSet = {
-	webSearch: ReturnType<typeof webSearchTool>;
-	deepResearch: ReturnType<typeof deepResearchTool>;
-	webCrawl: ReturnType<typeof webCrawlerTool>;
-	createMessageThread: ReturnType<typeof createMessageThreadTool>;
-	scheduleWorkflow: ReturnType<typeof scheduleWorkflowTool>;
-	createDocument: ReturnType<typeof createDocumentTool>;
+// export type AgentToolSet = {
+// 	"web-search": ReturnType<typeof webSearchTool>;
+// 	"create-message-thread": ReturnType<typeof createMessageThreadTool>;
+// };
+
+export const getAgentTools = (
+	uiStreamWriter: UIMessageStreamWriter,
+	// TODO: Add removeTools to the tools
+) => {
+	return {
+		"web-search": webSearchTool(uiStreamWriter),
+		"create-message-thread": createMessageThreadTool(),
+	};
 };
 
-export const agentToolSetKeys: (keyof AgentToolSet)[] = [
-	"webSearch",
-	"deepResearch",
-	"webCrawl",
-	"createMessageThread",
-	"scheduleWorkflow",
-	"createDocument",
-];
+export type AgentToolSet = ReturnType<typeof getAgentTools>;
+
+// export const agentToolSetKeys: (keyof AgentToolSet)[] = [
+// 	"web-search",
+// 	"create-message-thread",
+// ];

@@ -8,7 +8,6 @@ import {
 import { Skeleton } from "@client/components/ui/skeleton";
 import { cn } from "@client/lib/utils";
 import type { ChatRoomMessage as ChatRoomMessageType } from "@shared/types";
-import type { ToolUIPart } from "ai";
 import { CollapsibleRawData } from "../tools/collapslble-raw-data";
 
 export function ChatRoomMessage({
@@ -51,10 +50,7 @@ export function ChatRoomMessage({
 
 					if (
 						part.type === "tool-create-message-thread" &&
-						part.input &&
-						typeof part.input === "object" &&
-						"message" in part.input &&
-						typeof part.input.message === "string"
+						part.input?.message
 					) {
 						return (
 							<ChatMessageContent
@@ -63,18 +59,12 @@ export function ChatRoomMessage({
 							/>
 						);
 					}
-
-					if (part.type.startsWith("tool-")) {
-						const toolCall = part as ToolUIPart;
-						const toolResult = toolCall.output;
-						console.log("[formulateResponseX] tool result", toolResult);
-
-						return (
-							<CollapsibleRawData
-								key={toolCall.toolCallId}
-								toolUse={toolCall}
-							/>
-						);
+					switch (part.type) {
+						// case "tool-create-message-thread":
+						case "tool-web-search":
+							return (
+								<CollapsibleRawData key={part.toolCallId} toolUse={part} />
+							);
 					}
 				})}
 				{threadAreaComponent}

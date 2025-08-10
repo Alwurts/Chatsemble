@@ -20,6 +20,8 @@ const scheduleWorkflowInputSchema = z.object({
 		.describe("The JSON object defining the steps of the workflow."),
 });
 
+export type ScheduleWorkflowInput = z.infer<typeof scheduleWorkflowInputSchema>;
+
 const scheduleWorkflowOutputSchema = z
 	.object({
 		success: z.literal(true),

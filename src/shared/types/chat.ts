@@ -1,4 +1,4 @@
-import type { UIMessage } from "ai";
+import type { AiUIMessage } from "@shared/types/ai";
 import { z } from "zod";
 
 export type ChatMessageStatus = "pending" | "completed" | "error";
@@ -33,7 +33,7 @@ export type ChatInputValue = {
 export interface ChatRoomMessagePartial {
 	id: number;
 	mentions: ChatMention[];
-	parts: UIMessage["parts"];
+	parts: AiUIMessage["parts"];
 	status: ChatMessageStatus;
 	createdAt: number;
 	threadId: number | null;

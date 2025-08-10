@@ -5,8 +5,8 @@ import {
 	ToolInvocationName,
 } from "@client/components/ui/tool-invocation";
 import type {
-	CreateDocumentArgs,
-	CreateDocumentResult,
+	CreateDocumentInput,
+	CreateDocumentOutput,
 } from "@server/ai/tools/create-document-tool";
 import type { AgentToolUse } from "@shared/types";
 import { FileText } from "lucide-react";
@@ -20,9 +20,9 @@ export function CreateDocumentTool({ toolUse }: { toolUse: AgentToolUse }) {
 			? "Create Document"
 			: toolUse.toolName;
 
-	const args = toolUse.args as CreateDocumentArgs | undefined;
+	const args = toolUse.args as CreateDocumentInput | undefined;
 	const result = isResult
-		? (toolUse.result as CreateDocumentResult | undefined)
+		? (toolUse.result as CreateDocumentOutput | undefined)
 		: undefined;
 
 	return (
@@ -43,7 +43,7 @@ export function CreateDocumentTool({ toolUse }: { toolUse: AgentToolUse }) {
 	);
 }
 
-function CreateDocumentToolCallView({ args }: { args?: CreateDocumentArgs }) {
+function CreateDocumentToolCallView({ args }: { args?: CreateDocumentInput }) {
 	return (
 		<div className="flex flex-col items-center gap-1 py-2">
 			<FileText className="h-7 w-7 text-muted-foreground animate-pulse" />
@@ -60,7 +60,7 @@ function CreateDocumentToolCallView({ args }: { args?: CreateDocumentArgs }) {
 function CreateDocumentToolResultView({
 	result,
 	content,
-}: { result?: CreateDocumentResult; content: string }) {
+}: { result?: CreateDocumentOutput; content: string }) {
 	if (!result) {
 		return null;
 	}

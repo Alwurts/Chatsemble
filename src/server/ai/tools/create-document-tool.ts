@@ -14,6 +14,8 @@ const createDocumentInputSchema = z.object({
 		.describe("The full markdown content for the document."),
 });
 
+export type CreateDocumentInput = z.infer<typeof createDocumentInputSchema>;
+
 const createDocumentOutputSchema = z
 	.object({
 		success: z.literal(true),
