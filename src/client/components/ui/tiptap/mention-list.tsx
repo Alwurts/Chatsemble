@@ -47,7 +47,7 @@ export default forwardRef<MentionListRef, MentionListProps>((props, ref) => {
 		selectItem(selectedIndex);
 	};
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only depend on items change
 	useEffect(() => setSelectedIndex(0), [props.items]);
 
 	useImperativeHandle(ref, () => ({

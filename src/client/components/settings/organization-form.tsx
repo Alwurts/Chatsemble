@@ -66,9 +66,7 @@ export function OrganizationForm() {
 						});
 					}
 				},
-				onError: (ctx: {
-					error: { message: string };
-				}) => {
+				onError: (ctx: { error: { message: string } }) => {
 					toast.error(ctx.error.message);
 					setIsRevoking(isRevoking.filter((id) => id !== invitation.id));
 				},
@@ -138,6 +136,7 @@ export function OrganizationForm() {
 												onClick={() => {
 													authClient.organization.removeMember({
 														memberIdOrEmail: member.id,
+														organizationId: optimisticOrg?.id,
 													});
 												}}
 											>

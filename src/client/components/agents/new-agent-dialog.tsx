@@ -1,7 +1,3 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-
 import { Button } from "@client/components/ui/button";
 import {
 	Dialog,
@@ -13,8 +9,11 @@ import {
 } from "@client/components/ui/dialog";
 import { Form } from "@client/components/ui/form";
 import { honoClient } from "@client/lib/api-client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { type AgentFormValues, createAgentSchema } from "@shared/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
+import { useForm } from "react-hook-form";
 import { AgentForm } from "./agent-form";
 
 export function NewAgentDialog({

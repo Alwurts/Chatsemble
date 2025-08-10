@@ -89,10 +89,10 @@ export interface AgentToolAnnotation {
 	data?: any;
 }
 
-export interface AgentToolPartial {
+interface AgentToolPartial {
 	toolCallId: string;
 	toolName: string;
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: tool arguments can be any type
 	args: Record<string, any>;
 	annotations: AgentToolAnnotation[];
 }
@@ -103,7 +103,7 @@ export interface AgentToolCall extends AgentToolPartial {
 
 export interface AgentToolResult extends AgentToolPartial {
 	type: "tool-result";
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: tool results can be any type
 	result: any;
 }
 

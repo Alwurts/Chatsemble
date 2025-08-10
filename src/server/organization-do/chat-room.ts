@@ -49,7 +49,7 @@ export class ChatRooms {
 			return;
 		}
 
-		const [room, members, messages, workflows] = await Promise.all([
+		const [room, members, messages, workflows, documents] = await Promise.all([
 			this.deps.dbServices.getChatRoomById(roomId),
 			this.deps.dbServices.getChatRoomMembers({ roomId }),
 			this.deps.dbServices.getChatRoomMessages({
@@ -57,6 +57,7 @@ export class ChatRooms {
 				threadId: null,
 			}),
 			this.deps.dbServices.getChatRoomWorkflows(roomId),
+			this.deps.dbServices.getChatRoomDocuments(roomId),
 		]);
 
 		if (!room) {
@@ -77,6 +78,7 @@ export class ChatRooms {
 				members,
 				room,
 				workflows,
+				documents,
 			},
 			session.userId,
 		);
@@ -137,6 +139,15 @@ export class ChatRooms {
 		);
 	};
 
+	/**
+	 * Process an incoming chat message
+	 * @param memberId - The ID of the member who sent the message
+	 * @param roomId - The ID of the room the message is in
+	 * @param message - The message to process
+	 * @param existingMessageId - The ID of the existing message to update used when streaming
+	 * @param notifyAgents - Whether to notify agents about the message
+	 * @returns The processed chat room message
+	 */
 	processIncomingChatMessage = async ({
 		memberId,
 		roomId,
@@ -156,17 +167,17 @@ export class ChatRooms {
 			chatRoomMessage = await this.deps.dbServices.updateChatRoomMessage(
 				existingMessageId,
 				{
-					content: message.content,
+					parts: message.parts,
 					mentions: message.mentions,
-					toolUses: message.toolUses,
+					status: message.status,
 				},
 			);
 		} else {
 			chatRoomMessage = await this.deps.dbServices.insertChatRoomMessage({
 				memberId,
-				content: message.content,
+				parts: message.parts,
 				mentions: message.mentions,
-				toolUses: message.toolUses,
+				status: message.status,
 				threadId: message.threadId,
 				roomId,
 				metadata: {

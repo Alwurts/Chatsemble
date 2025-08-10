@@ -9,9 +9,9 @@ import {
 import { dateToPrettyTimeAgo } from "@client/lib/date";
 import { cn } from "@client/lib/utils";
 import type { ChatMessageThreadMetadata } from "@shared/types";
-import { type VariantProps, cva } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronRight, SparklesIcon, UserIcon } from "lucide-react";
-import React, { type ReactNode, useState, useEffect } from "react";
+import React, { type ReactNode, useEffect, useState } from "react";
 import { Card } from "./card";
 
 const chatMessageVariants = cva("flex gap-4 w-full", {

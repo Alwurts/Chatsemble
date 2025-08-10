@@ -1,6 +1,3 @@
-import { useForm } from "react-hook-form";
-import type { z } from "zod";
-
 import { ChatMemberMultiSelect } from "@client/components/chat-room-member/chat-member-multi-select";
 import { Button } from "@client/components/ui/button";
 import { DialogFooter } from "@client/components/ui/dialog";
@@ -23,6 +20,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type ChatRoomType, createChatRoomSchema } from "@shared/types";
 import { Settings, UserPlus } from "lucide-react";
+import { useForm } from "react-hook-form";
+import type { z } from "zod";
 
 type CreateChatRoomFormValues = z.infer<typeof createChatRoomSchema>;
 

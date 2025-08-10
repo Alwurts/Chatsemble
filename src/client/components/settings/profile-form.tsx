@@ -1,9 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-
 import { Button } from "@client/components/ui/button";
 import {
 	Form,
@@ -15,7 +11,10 @@ import {
 	FormMessage,
 } from "@client/components/ui/form";
 import { Input } from "@client/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import * as z from "zod";
 
 const profileFormSchema = z.object({
 	username: z
@@ -26,11 +25,9 @@ const profileFormSchema = z.object({
 		.max(30, {
 			message: "Username must not be longer than 30 characters.",
 		}),
-	email: z
-		.string({
-			required_error: "Please select an email to display.",
-		})
-		.email(),
+	email: z.email({
+		message: "Please select an email to display.",
+	}),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;

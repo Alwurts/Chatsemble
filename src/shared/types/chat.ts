@@ -1,5 +1,7 @@
+import type { AIUIMessage } from "@shared/types/ai";
 import { z } from "zod";
-import type { AgentToolUse } from "./agent";
+
+export type ChatMessageStatus = "pending" | "completed" | "error";
 
 export type ChatMessageMetadata = {
 	optimisticData?: {
@@ -30,9 +32,9 @@ export type ChatInputValue = {
 // ChatRoomMessage
 export interface ChatRoomMessagePartial {
 	id: number;
-	content: string;
 	mentions: ChatMention[];
-	toolUses: AgentToolUse[];
+	parts: AIUIMessage["parts"];
+	status: ChatMessageStatus;
 	createdAt: number;
 	threadId: number | null;
 	roomId: string;

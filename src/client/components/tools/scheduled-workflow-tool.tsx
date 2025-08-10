@@ -4,17 +4,11 @@ import {
 	ToolInvocationHeader,
 	ToolInvocationName,
 } from "@client/components/ui/tool-invocation";
+import type {
+	ScheduleWorkflowInput,
+	ScheduleWorkflowOutput,
+} from "@server/ai/tools/schedule-workflow-tool";
 import type { AgentToolUse } from "@shared/types";
-
-type ScheduleWorkflowResult =
-	| { success: true; workflowId: string; nextRun?: string }
-	| { success: false; error: string }; // TODO: This types should come from the backend
-
-type ScheduleWorkflowArgs = {
-	scheduleExpression: string;
-	goal: string;
-	steps: { stepId: string; description: string; toolName?: string | null }[];
-};
 
 export function ScheduledWorkflowTool({ toolUse }: { toolUse: AgentToolUse }) {
 	const isCall = toolUse.type === "tool-call";
@@ -24,9 +18,9 @@ export function ScheduledWorkflowTool({ toolUse }: { toolUse: AgentToolUse }) {
 			? "Scheduled Workflow"
 			: toolUse.toolName;
 
-	const args = toolUse.args as ScheduleWorkflowArgs | undefined;
+	const args = toolUse.args as ScheduleWorkflowInput | undefined;
 	const result = isResult
-		? (toolUse.result as ScheduleWorkflowResult | undefined)
+		? (toolUse.result as ScheduleWorkflowOutput | undefined)
 		: undefined;
 
 	return (
@@ -46,7 +40,9 @@ export function ScheduledWorkflowTool({ toolUse }: { toolUse: AgentToolUse }) {
 
 function ScheduledWorkflowToolCallView({
 	args,
-}: { args?: ScheduleWorkflowArgs }) {
+}: {
+	args?: ScheduleWorkflowInput;
+}) {
 	if (!args) {
 		return null;
 	}
@@ -84,7 +80,10 @@ function ScheduledWorkflowToolCallView({
 function ScheduledWorkflowToolResultView({
 	args,
 	result,
-}: { args?: ScheduleWorkflowArgs; result?: ScheduleWorkflowResult }) {
+}: {
+	args?: ScheduleWorkflowInput;
+	result?: ScheduleWorkflowOutput;
+}) {
 	return (
 		<div className="flex flex-col gap-3">
 			{args && <ScheduledWorkflowToolCallView args={args} />}
@@ -95,7 +94,9 @@ function ScheduledWorkflowToolResultView({
 
 function ScheduledWorkflowResultList({
 	result,
-}: { result: ScheduleWorkflowResult | undefined }) {
+}: {
+	result: ScheduleWorkflowOutput | undefined;
+}) {
 	if (!result) {
 		return null;
 	}

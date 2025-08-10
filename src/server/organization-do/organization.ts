@@ -7,8 +7,8 @@ import type {
 	WsChatIncomingMessage,
 	WsChatOutgoingMessage,
 } from "@shared/types";
-import { drizzle } from "drizzle-orm/durable-sqlite";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
+import { drizzle } from "drizzle-orm/durable-sqlite";
 import { migrate } from "drizzle-orm/durable-sqlite/migrator";
 import { Agents } from "./agent";
 import { ChatRooms } from "./chat-room";
@@ -17,6 +17,7 @@ import {
 	type ChatRoomDbServices,
 	createChatRoomDbServices,
 } from "./db/services";
+import { Documents } from "./document";
 import { Workflows } from "./workflow";
 
 export class OrganizationDurableObject extends DurableObject<Env> {
@@ -27,6 +28,7 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 	agents: Agents;
 	workflows: Workflows;
 	chatRooms: ChatRooms;
+	documents: Documents;
 
 	constructor(ctx: DurableObjectState, env: Env) {
 		super(ctx, env);
@@ -53,6 +55,7 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 			dbServices: this.dbServices,
 			processIncomingChatMessage: this.processIncomingChatMessage,
 			createWorkflow: this.createWorkflow,
+			createDocument: this.createDocument,
 		});
 
 		this.workflows = new Workflows({
@@ -60,6 +63,11 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 			storage: this.storage,
 			broadcastWebSocketMessageToRoom: this.broadcastWebSocketMessageToRoom,
 			routeWorkflowToRelevantAgent: this.routeWorkflowToRelevantAgent,
+		});
+
+		this.documents = new Documents({
+			dbServices: this.dbServices,
+			broadcastWebSocketMessageToRoom: this.broadcastWebSocketMessageToRoom,
 		});
 
 		for (const webSocket of ctx.getWebSockets()) {
@@ -167,7 +175,7 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 				default:
 					console.warn(
 						`Received unhandled message type: ${
-							// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+							// biome-ignore lint/suspicious/noExplicitAny: unknown message structure
 							(parsedMsg as any)?.type
 						}`,
 					);
@@ -238,15 +246,12 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 		message: WsChatOutgoingMessage,
 		targetRoomId: string,
 	) => {
-		console.log(
-			`Broadcasting message type ${message.type} to active sessions in room ${targetRoomId}`,
-		);
-		let recipients = 0;
+		//let recipients = 0;
 		for (const [ws, session] of this.sessions.entries()) {
 			if (session.activeRoomId === targetRoomId) {
 				try {
 					ws.send(JSON.stringify(message));
-					recipients++;
+					//recipients++;
 				} catch (e) {
 					console.error(
 						`Failed to send message to WebSocket for user ${session.userId} in room ${targetRoomId}:`,
@@ -256,9 +261,9 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 				}
 			}
 		}
-		console.log(
-			`Message broadcasted to ${recipients} recipients in room ${targetRoomId}.`,
-		);
+		// console.log(
+		// 	`Message broadcasted to ${recipients} recipients in room ${targetRoomId}.`,
+		// );
 	};
 
 	handleUserInitRequest = async (session: Session) => {
@@ -296,6 +301,12 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 		params: Parameters<ChatRoomDbServices["createAgentWorkflow"]>[0],
 	) => {
 		return this.workflows.createWorkflow(params);
+	};
+
+	private createDocument = async (
+		params: Parameters<ChatRoomDbServices["createDocument"]>[0],
+	) => {
+		return this.documents.createDocument(params);
 	};
 
 	// RPC services
@@ -349,5 +360,9 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 
 	async deleteWorkflow(workflowId: string) {
 		return await this.workflows.deleteWorkflow(workflowId);
+	}
+
+	async deleteDocument(documentId: string) {
+		return await this.documents.deleteDocument(documentId);
 	}
 }

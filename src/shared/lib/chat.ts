@@ -3,22 +3,22 @@ import { customAlphabet } from "nanoid";
 import type { ChatRoomMessage, ChatRoomMessagePartial } from "../types/chat";
 
 export function createChatRoomMessagePartial({
-	content,
-	toolUses,
+	parts,
 	mentions,
 	threadId,
 	roomId,
+	status,
 }: Pick<
 	ChatRoomMessagePartial,
-	"content" | "toolUses" | "threadId" | "mentions" | "roomId"
+	"parts" | "threadId" | "mentions" | "roomId" | "status"
 >): ChatRoomMessagePartial {
 	return {
 		id: Number(customAlphabet("0123456789", 20)()),
 		threadId,
 		roomId,
-		content,
-		toolUses,
+		parts,
 		mentions,
+		status,
 		createdAt: Date.now(),
 	};
 }

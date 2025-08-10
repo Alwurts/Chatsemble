@@ -2,9 +2,9 @@
 
 import {
 	ChatMessageSkeleton,
+	ChatMessagesSkeleton,
 	ChatRoomMessage,
 } from "@client/components/chat-room/chat-room-message";
-import { ChatMessagesSkeleton } from "@client/components/chat-room/chat-room-message";
 import { useAuthSession } from "@client/components/providers/auth-provider";
 import { useOrganizationConnectionContext } from "@client/components/providers/organization-connection-provider";
 import { ChatMessageArea } from "@client/components/ui/chat-message-area";

@@ -8,6 +8,7 @@ import type {
 	ChatRoom,
 	ChatRoomMember,
 	ChatRoomMessage,
+	Document,
 	Workflow,
 	WsChatIncomingMessage,
 	WsChatOutgoingMessage,
@@ -32,6 +33,7 @@ export function useMainChatRoomState({
 	const [members, setMembers] = useState<ChatRoomMember[]>([]);
 	const [room, setRoom] = useState<ChatRoom | null>(null);
 	const [workflows, setWorkflows] = useState<Workflow[]>([]);
+	const [documents, setDocuments] = useState<Document[]>([]);
 	const [status, setStatus] = useState<"loading" | "success" | "error">(
 		"loading",
 	);
@@ -54,6 +56,7 @@ export function useMainChatRoomState({
 						setMembers(wsMessage.members);
 						setRoom(wsMessage.room);
 						setWorkflows(wsMessage.workflows);
+						setDocuments(wsMessage.documents);
 						setStatus("success");
 					}
 					break;
@@ -96,11 +99,16 @@ export function useMainChatRoomState({
 			}
 
 			const newMessagePartial = createChatRoomMessagePartial({
-				content: value.content,
+				parts: [
+					{
+						type: "text",
+						text: value.content,
+					},
+				],
 				mentions: value.mentions,
-				toolUses: [],
 				threadId: null,
 				roomId,
+				status: "completed",
 			});
 
 			const wsMessage: WsMessageChatRoomMessageSend = {
@@ -144,6 +152,7 @@ export function useMainChatRoomState({
 		members,
 		room,
 		workflows,
+		documents,
 		status,
 		handleSubmit,
 		handleMessage,

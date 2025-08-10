@@ -1,7 +1,7 @@
 import { cn } from "@client/lib/utils";
 import { marked } from "marked";
 import type * as React from "react";
-import { Suspense, isValidElement, memo, useMemo } from "react";
+import { isValidElement, memo, Suspense, useMemo } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
@@ -277,7 +277,6 @@ const components: Partial<Components> = {
 		</td>
 	),
 	img: ({ alt, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => (
-		// biome-ignore lint/a11y/useAltText: alt is not required
 		<img className="rounded-md" alt={alt} {...props} />
 	),
 	code: ({ children, node, className, ...props }) => {
@@ -354,7 +353,7 @@ export const MarkdownContent = memo(({ content, id }: MarkdownContentProps) => {
 		<MemoizedMarkdownBlock
 			content={block}
 			key={`${id}-block_${
-				// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+				// biome-ignore lint/suspicious/noArrayIndexKey: content blocks maintain order
 				index
 			}`}
 		/>

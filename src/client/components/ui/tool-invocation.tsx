@@ -19,7 +19,10 @@ export function ToolInvocation({
 export function ToolInvocationHeader({
 	children,
 	className,
-}: { children: React.ReactNode; className?: string }) {
+}: {
+	children: React.ReactNode;
+	className?: string;
+}) {
 	return (
 		<div className={cn("flex flex-col items-stretch gap-2 px-4", className)}>
 			{children}
@@ -30,7 +33,10 @@ export function ToolInvocationHeader({
 export function ToolInvocationContent({
 	children,
 	className,
-}: { children: React.ReactNode; className?: string }) {
+}: {
+	children: React.ReactNode;
+	className?: string;
+}) {
 	return <div className={cn("px-6", className)}>{children}</div>;
 }
 
@@ -63,24 +69,12 @@ export function ToolInvocationName({
 	);
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export function ToolInvocationResult({ result }: { result: any }) {
+// biome-ignore lint/suspicious/noExplicitAny: generic tool data structure
+export function ToolInvocationRawData({ data }: { data: any }) {
 	return (
 		<div className="pl-4 text-sm">
-			<div className="font-medium mb-1">Result:</div>
-			<pre className="whitespace-pre-wrap font-mono text-xs bg-muted p-2 rounded-md overflow-auto">
-				{JSON.stringify(result, null, 2)}
-			</pre>
-		</div>
-	);
-}
-
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export function ToolInvocationArgs({ args }: { args: any }) {
-	return (
-		<div className="pl-4 text-sm">
-			<pre className="whitespace-pre-wrap font-mono text-xs bg-muted p-2 rounded-md overflow-auto">
-				{JSON.stringify(args, null, 2)}
+			<pre className="whitespace-pre-wrap break-all font-mono text-xs bg-muted p-2 rounded-md overflow-auto mt-1">
+				{JSON.stringify(data, null, 2)}
 			</pre>
 		</div>
 	);

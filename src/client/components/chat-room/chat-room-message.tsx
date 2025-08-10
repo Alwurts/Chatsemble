@@ -6,20 +6,9 @@ import {
 	ChatMessageMetadata,
 } from "@client/components/ui/chat-message";
 import { Skeleton } from "@client/components/ui/skeleton";
-
-import { AnnotatedTool } from "@client/components/tools/annotated-tool";
-import {
-	ToolInvocation,
-	ToolInvocationArgs,
-	ToolInvocationContent,
-	ToolInvocationHeader,
-	ToolInvocationName,
-	ToolInvocationResult,
-} from "@client/components/ui/tool-invocation";
+import { cn } from "@client/lib/utils";
 import type { ChatRoomMessage as ChatRoomMessageType } from "@shared/types";
-import { ScheduledWorkflowTool } from "../tools/scheduled-workflow-tool";
-import { ToolInvocationSourcesList } from "../tools/sources-tool";
-import { Separator } from "../ui/separator";
+import { CollapsibleRawData } from "../tools/collapslble-raw-data";
 
 export function ChatRoomMessage({
 	message,
@@ -38,8 +27,14 @@ export function ChatRoomMessage({
 			? threadArea(message, message.threadMetadata)
 			: null;
 
+	const isLoading = message.status === "pending";
+
 	return (
-		<ChatMessage key={String(message.id)} id={String(message.id)}>
+		<ChatMessage
+			key={String(message.id)}
+			id={String(message.id)}
+			className={cn(isLoading && "animate-pulse")}
+		>
 			{actionArea}
 			<ChatMessageAvatar imageSrc={message.member.image ?? undefined} />
 			<ChatMessageContentArea>
@@ -47,88 +42,43 @@ export function ChatRoomMessage({
 					username={message.member.name}
 					createdAt={message.createdAt}
 				/>
-				<ChatMessageContent content={message.content}>
-					{message.toolUses.map((toolUse) => {
-						if (
-							toolUse.toolName === "deepResearch" ||
-							toolUse.toolName === "webCrawl" ||
-							toolUse.toolName === "webSearch"
-						) {
-							let titleCall = "Running tool";
-							let titleResult = "Tool completed";
-							switch (toolUse.toolName) {
-								case "deepResearch":
-									titleCall = "Deep Research";
-									titleResult = "Deep Research Completed";
-									break;
-								case "webCrawl":
-									titleCall = "Web Crawl";
-									titleResult = "Web Crawl Completed";
-									break;
-								case "webSearch":
-									titleCall = "Web Search";
-									titleResult = "Web Search Completed";
-									break;
-							}
-							return (
-								<div className="flex flex-col gap-3">
-									<AnnotatedTool
-										key={toolUse.toolCallId}
-										toolUse={toolUse}
-										titleCall={titleCall}
-										titleResult={titleResult}
-									/>
+				{message.parts.map((part, index) => {
+					if (part.type === "text") {
+						// biome-ignore lint/suspicious/noArrayIndexKey: It's ok to use index as key here
+						return <ChatMessageContent key={index} content={part.text} />;
+					}
 
-									{toolUse.type === "tool-result" &&
-										toolUse.result &&
-										"sources" in toolUse.result &&
-										toolUse.result.sources.length > 0 && (
-											<>
-												<Separator />
-												<ToolInvocationSourcesList
-													sources={toolUse.result.sources}
-													maxVisible={5}
-													maxHeight="10rem"
-												/>
-											</>
-										)}
-								</div>
-							);
-						}
-
-						if (toolUse.toolName === "scheduleWorkflow") {
-							return <ScheduledWorkflowTool toolUse={toolUse} />;
-						}
-
+					if (
+						part.type === "tool-create-message-thread" &&
+						part.input?.message
+					) {
 						return (
-							<ToolInvocation key={toolUse.toolCallId}>
-								<ToolInvocationHeader>
-									<ToolInvocationName
-										name={`Used ${toolUse.toolName}`}
-										type={toolUse.type}
-									/>
-								</ToolInvocationHeader>
-								<ToolInvocationContent>
-									{toolUse.args && <ToolInvocationArgs args={toolUse.args} />}
-									{toolUse.type === "tool-result" && toolUse.result && (
-										<ToolInvocationResult result={toolUse.result} />
-									)}
-								</ToolInvocationContent>
-							</ToolInvocation>
+							<ChatMessageContent
+								key={part.toolCallId}
+								content={part.input.message}
+							/>
 						);
-					})}
-					{threadAreaComponent}
-				</ChatMessageContent>
+					}
+					switch (part.type) {
+						// case "tool-create-message-thread":
+						case "tool-web-search":
+							return (
+								<CollapsibleRawData key={part.toolCallId} toolUse={part} />
+							);
+					}
+				})}
+				{threadAreaComponent}
 			</ChatMessageContentArea>
 		</ChatMessage>
 	);
 }
 
 export function ChatMessagesSkeleton({ items = 3 }: { items?: number }) {
+	// TODO: Add a skeleton for pending ai messages, add a status to message
 	return (
 		<>
 			{[...Array(items)].map((_, i) => (
-				// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+				// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton items
 				<ChatMessageSkeleton key={i} />
 			))}
 		</>

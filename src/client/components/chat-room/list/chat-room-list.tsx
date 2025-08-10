@@ -20,7 +20,7 @@ import {
 	useSidebar,
 } from "@client/components/ui/sidebar";
 import type { ChatRoom, ChatRoomType } from "@shared/types";
-import { Link, getRouteApi } from "@tanstack/react-router";
+import { getRouteApi, Link } from "@tanstack/react-router";
 import {
 	AlertCircle,
 	ArrowUpRight,

@@ -1,18 +1,42 @@
 import { env } from "cloudflare:workers";
 import type { AgentToolAnnotation, ToolSource } from "@shared/types";
-import { type DataStreamWriter, tool } from "ai";
+import { tool, type UIMessageStreamWriter } from "ai";
 import FirecrawlApp from "firecrawl";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 
-export const deepResearchTool = (dataStream: DataStreamWriter) =>
+const deepResearchInputSchema = z.object({
+	query: z.string().describe("The specific query for deep research."),
+});
+
+const deepResearchOutputSchema = z
+	.object({
+		sources: z.array(
+			z.object({
+				url: z.string(),
+				title: z.string(),
+				description: z.string().optional(),
+				icon: z.string().optional(),
+			}),
+		),
+		finalAnalysis: z.string(),
+	})
+	.or(
+		z.object({
+			success: z.literal(false),
+			error: z.string(),
+		}),
+	);
+
+export type DeepResearchOutput = z.infer<typeof deepResearchOutputSchema>;
+
+export const deepResearchTool = (dataStream: UIMessageStreamWriter) =>
 	tool({
 		description:
 			"Deeply research a topic when user asks for detailed information, opinions, comprehensive analysis, or when webSearchTool is insufficient. Use specific queries.",
-		parameters: z.object({
-			query: z.string().describe("The specific query for deep research."),
-		}),
-		execute: async ({ query }, { toolCallId }) => {
+		inputSchema: deepResearchInputSchema,
+		outputSchema: deepResearchOutputSchema,
+		execute: async ({ query }, { toolCallId }): Promise<DeepResearchOutput> => {
 			try {
 				console.log("[deepResearchTool] Starting deep research for:", query);
 
@@ -39,7 +63,10 @@ export const deepResearchTool = (dataStream: DataStreamWriter) =>
 							},
 							timestamp: Date.now(),
 						} satisfies AgentToolAnnotation;
-						dataStream.writeMessageAnnotation(annotation);
+						dataStream.write({
+							type: "data-message-annotation",
+							data: annotation,
+						});
 					},
 				);
 
@@ -80,7 +107,10 @@ export const deepResearchTool = (dataStream: DataStreamWriter) =>
 					status: "failed",
 					timestamp: Date.now(),
 				} satisfies AgentToolAnnotation;
-				dataStream.writeMessageAnnotation(errorAnnotation);
+				dataStream.write({
+					type: "data-message-annotation",
+					data: errorAnnotation,
+				});
 				return { sources: [], finalAnalysis: "", error: errorMessage };
 			}
 		},

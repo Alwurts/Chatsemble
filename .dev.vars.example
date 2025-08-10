@@ -1,8 +1,11 @@
 AI_GATEWAY_OPENAI_URL=https://gateway.ai.cloudflare.com/v1/43243242/chatsemble/openai
 AI_GATEWAY_GROQ_URL=https://gateway.ai.cloudflare.com/v1/432432342/chatsemble/groq
+AI_GATEWAY_GEMINI_URL=https://gateway.ai.cloudflare.com/v1/43321321321/chatsemble/google-ai-studio
+
 
 OPENAI_API_KEY=key
 GROQ_API_KEY=key
+GEMINI_API_KEY=KEY
 
 BRAVE_API_KEY=key
 FIRECRAWL_API_KEY=key

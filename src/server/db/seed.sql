@@ -1,9 +1,9 @@
 -- Insert into user table
 INSERT OR IGNORE INTO user (id, name, email, email_verified, image, created_at, updated_at)
 VALUES 
-('Fe7gvakGA5tVO5Ulho1BIqVGpMBan8r5', 'Alejandro Wurts', 'alejandrowurts@gmail.com', 1, '/notion-avatars/avatar-08.svg', unixepoch('now') * 1000, unixepoch('now') * 1000),
-('Ks9mPqR4Nt2Wx5Yz8Abc3Def7Ghi1JkL', 'Sarah Johnson', 'sarah.johnson@example.com', 1, '/notion-avatars/avatar-02.svg', unixepoch('now') * 1000, unixepoch('now') * 1000),
-('Lm4nQpR8St2Uv5Wx7Yza3Bcd6Efg9HiJ', 'Michael Chen', 'michael.chen@example.com', 1, '/notion-avatars/avatar-03.svg', unixepoch('now') * 1000, unixepoch('now') * 1000);
+('Fe7gvakGA5tVO5Ulho1BIqVGpMBan8r5', 'Pedro Pascal', 'pedro.pascal@gmail.com', 1, '/notion-avatars/avatar-08.svg', unixepoch('now') * 1000, unixepoch('now') * 1000),
+('Ks9mPqR4Nt2Wx5Yz8Abc3Def7Ghi1JkL', 'Sarah Johnson', 'sarah.johnson@gmail.com', 1, '/notion-avatars/avatar-02.svg', unixepoch('now') * 1000, unixepoch('now') * 1000),
+('Lm4nQpR8St2Uv5Wx7Yza3Bcd6Efg9HiJ', 'Michael Chen', 'michael.chen@gmail.com', 1, '/notion-avatars/avatar-03.svg', unixepoch('now') * 1000, unixepoch('now') * 1000);
 
 -- Insert into account table
 INSERT OR IGNORE INTO account (id, user_id, account_id, provider_id, access_token, refresh_token, access_token_expires_at, refresh_token_expires_at, scope, id_token, password, created_at, updated_at)

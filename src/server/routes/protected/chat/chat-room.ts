@@ -1,11 +1,10 @@
-import { Hono } from "hono";
-
 import { zValidator } from "@hono/zod-validator";
 import { db } from "@server/db";
 import * as globalSchema from "@server/db/schema";
 import type { HonoContextWithAuth } from "@server/types/hono";
 import { createChatRoomSchema } from "@shared/types";
 import { inArray } from "drizzle-orm";
+import { Hono } from "hono";
 
 const chatRoom = new Hono<HonoContextWithAuth>().post(
 	"/",

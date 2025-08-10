@@ -1,7 +1,13 @@
 import { Button } from "@client/components/ui/button";
+import { CheckIcon, CopyIcon } from "lucide-react";
 import { useState } from "react";
 
-export const CopyButton = ({ textToCopy }: { textToCopy: string }) => {
+export const CopyButton = ({
+	textToCopy,
+}: {
+	textToCopy: string;
+	children?: React.ReactNode;
+}) => {
 	const [copied, setCopied] = useState(false);
 
 	const handleCopy = async () => {
@@ -11,8 +17,12 @@ export const CopyButton = ({ textToCopy }: { textToCopy: string }) => {
 	};
 
 	return (
-		<Button size="sm" variant="outline" onClick={handleCopy}>
-			{copied ? "Copied!" : "Copy Link"}
+		<Button size="icon" variant="outline" onClick={handleCopy}>
+			{copied ? (
+				<CheckIcon className="size-4" />
+			) : (
+				<CopyIcon className="size-4" />
+			)}
 		</Button>
 	);
 };

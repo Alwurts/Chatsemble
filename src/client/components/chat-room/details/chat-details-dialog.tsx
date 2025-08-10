@@ -13,16 +13,13 @@ import {
 	TabsList,
 	TabsTrigger,
 } from "@client/components/ui/tabs";
-import { Calendar, Info, UserPlus } from "lucide-react";
+import { Calendar, FileText, Info, UserPlus } from "lucide-react";
+import { ChatDetailsDocumentsSection } from "./chat-details-documents-section";
 import { ChatDetailsMembersSection } from "./chat-details-members-section";
 import { ChatDetailsSection } from "./chat-details-section";
 import { ChatDetailsWorkflowsSection } from "./chat-details-workflows-section";
 
-type ChatDetailsDialogView =
-	| "details"
-	| "configuration"
-	| "members"
-	| "workflows";
+type ChatDetailsDialogView = "details" | "members" | "workflows" | "documents";
 
 export type ChatDetailsDialogOpen = {
 	view: ChatDetailsDialogView;
@@ -88,7 +85,7 @@ function ChatDetailsDialogContent({
 			className="w-full flex-1 flex flex-col overflow-hidden"
 		>
 			<div className="px-4">
-				<TabsList className="grid w-full grid-cols-3">
+				<TabsList className="grid w-full grid-cols-4">
 					<TabsTrigger value="details" className="flex items-center gap-2">
 						<Info className="h-4 w-4" />
 						Details
@@ -101,6 +98,10 @@ function ChatDetailsDialogContent({
 						<Calendar className="h-4 w-4" />
 						Workflows
 					</TabsTrigger>
+					<TabsTrigger value="documents" className="flex items-center gap-2">
+						<FileText className="h-4 w-4" />
+						Documents
+					</TabsTrigger>
 				</TabsList>
 			</div>
 			<TabsContent value="details" className="flex-1 p-4">
@@ -111,6 +112,9 @@ function ChatDetailsDialogContent({
 			</TabsContent>
 			<TabsContent value="workflows" className="flex-1 overflow-y-auto">
 				<ChatDetailsWorkflowsSection />
+			</TabsContent>
+			<TabsContent value="documents" className="flex-1 overflow-y-auto">
+				<ChatDetailsDocumentsSection />
 			</TabsContent>
 		</Tabs>
 	);

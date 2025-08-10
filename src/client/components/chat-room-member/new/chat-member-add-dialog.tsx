@@ -27,11 +27,7 @@ export function ChatMemberAddDialog() {
 	);
 }
 
-function ChatMemberAddDialogContent({
-	onSuccess,
-}: {
-	onSuccess: () => void;
-}) {
+function ChatMemberAddDialogContent({ onSuccess }: { onSuccess: () => void }) {
 	const {
 		mainChatRoomState: { room },
 	} = useOrganizationConnectionContext();
