@@ -99,9 +99,14 @@ export function useThreadChatRoomState({
 			}
 
 			const newMessagePartial = createChatRoomMessagePartial({
-				content: value.content,
+				parts: [
+					{
+						type: "text",
+						text: value.content,
+					},
+				],
 				mentions: value.mentions,
-				toolUses: [],
+				status: "completed",
 				threadId,
 				roomId,
 			});

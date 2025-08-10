@@ -96,10 +96,10 @@ export function getStandardToolUsageRulesPrompt() {
 
 When performing an action for the user that requires tools, follow these steps **in order**:
 
-1.  **Decide whether to create a message thread:**
-    *   If the **Current Thread ID is 'None (Main Channel)'** (\`null\`), you **MUST** use the \`createMessageThread\` tool FIRST to create a new thread for this action. Include a brief message in the new thread indicating what action you are starting.
-    *   If the **Current Thread ID is NOT 'None'** (i.e., you are already in a thread), **DO NOT** use the \`createMessageThread\` tool. Proceed directly to step 2.
-    *   **Constraint**: Only call \`createMessageThread\` at most ONCE per action initiation from the main channel. Do not call other tools simultaneously with \`createMessageThread\`. Wait for its result before proceeding.
+1.  **IMPORTANT**: Decide whether to create a message thread:**
+    *   If the **Current Thread ID is 'None (Main Channel)'** (\`null\`), you **MUST** use the \`create-message-thread\` tool FIRST to create a new thread for this action. Include a brief message in the new thread indicating what action you are starting.
+    *   If the **Current Thread ID is NOT 'None'** (i.e., you are already in a thread), **DO NOT** use the \`create-message-thread\` tool. Proceed directly to step 2.
+    *   **Constraint**: Only call \`create-message-thread\` at most ONCE per action initiation from the main channel. Do not call other tools simultaneously with \`create-message-thread\`. Wait for its result before proceeding.
 
 2.  **Execute the required tool(s):**
     *   After handling thread creation (if necessary), use the appropriate tool or sequence of tools needed to fulfill the user's request.
@@ -115,7 +115,7 @@ export function getWorkflowExecutionRulesPrompt() {
 
 You are currently executing a scheduled workflow, for which you have to follow these rules:
 
-1.  **CRITICAL**: Your **FIRST** action **MUST** be to use the \`createMessageThread\` tool to create a dedicated thread for this workflow's execution and results.
+1.  **CRITICAL**: Your **FIRST** action **MUST** be to use the \`create-message-thread\` tool to create a dedicated thread for this workflow's execution and results.
     *   In the message accompanying the thread creation, introduce the workflow by stating its goal. Like "Starting a scheduled workflow the goal is too <workflow-goal>...".
     *   **Do not** proceed to other steps or tools until the thread is created.
 2.  Execute each step listed above **in sequence**.

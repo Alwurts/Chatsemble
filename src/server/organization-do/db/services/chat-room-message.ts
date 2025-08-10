@@ -19,9 +19,9 @@ export function createChatRoomMessageService(db: DrizzleSqliteDODatabase) {
 		const query = db
 			.select({
 				id: chatMessage.id,
-				content: chatMessage.content,
+				parts: chatMessage.parts,
 				mentions: chatMessage.mentions,
-				toolUses: chatMessage.toolUses,
+				status: chatMessage.status,
 				memberId: chatMessage.memberId,
 				createdAt: chatMessage.createdAt,
 				metadata: chatMessage.metadata,
@@ -137,9 +137,9 @@ export function createChatRoomMessageService(db: DrizzleSqliteDODatabase) {
 		return await db
 			.select({
 				id: chatMessage.id,
-				content: chatMessage.content,
+				parts: chatMessage.parts,
 				mentions: chatMessage.mentions,
-				toolUses: chatMessage.toolUses,
+				status: chatMessage.status,
 				memberId: chatMessage.memberId,
 				createdAt: chatMessage.createdAt,
 				metadata: chatMessage.metadata,

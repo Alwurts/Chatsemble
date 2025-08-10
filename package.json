@@ -7,6 +7,7 @@
 		"dev": "vite",
 		"build": "tsc -b && vite build",
 		"lint": "biome check --write src",
+		"typecheck": "tsc --noEmit",
 		"preview": "vite preview",
 		"deploy": "wrangler deploy",
 		"cf-types": "wrangler types",
@@ -14,13 +15,13 @@
 		"db:generate:organization": "DRIZZLE_SCHEMA=./src/server/organization-do/db/schema.ts DRIZZLE_OUT=./src/server/organization-do/db/migrations drizzle-kit generate --config=drizzle.do.config.ts",
 		"db:migrate:dev": "wrangler d1 migrations apply chatsemble-db --local",
 		"db:migrate:prod": "wrangler d1 migrations apply chatsemble-db --remote",
-		"db:seed:dev:sql": "wrangler d1 execute chatsemble-db --file=src/server/db/seed.sql --local",
-		"db:seed:prod:sql": "wrangler d1 execute chatsemble-db --file=src/server/db/seed.sql --remote",
+		"db:seed:dev": "wrangler d1 execute chatsemble-db --file=src/server/db/seed.sql --local",
+		"db:seed:prod": "wrangler d1 execute chatsemble-db --file=src/server/db/seed.sql --remote",
 		"db:studio": "drizzle-kit studio"
 	},
 	"dependencies": {
-		"@ai-sdk/google": "^1.2.11",
-		"@ai-sdk/openai": "^1.3.16",
+		"@ai-sdk/google": "^2.0.3",
+		"@ai-sdk/openai": "^2.0.8",
 		"@hono/zod-validator": "^0.4.3",
 		"@hookform/resolvers": "^4.1.3",
 		"@mendable/firecrawl-js": "^1.21.0",
@@ -51,7 +52,7 @@
 		"@tiptap/react": "^2.11.6",
 		"@tiptap/starter-kit": "^2.11.6",
 		"@tiptap/suggestion": "^2.11.7",
-		"ai": "^4.3.9",
+		"ai": "^5.0.8",
 		"better-auth": "^1.2.5",
 		"better-sqlite3": "^11.9.1",
 		"class-variance-authority": "^0.7.1",
@@ -81,7 +82,7 @@
 		"tailwindcss": "^4.0.17",
 		"tiptap-markdown": "^0.8.10",
 		"tw-animate-css": "^1.2.5",
-		"zod": "^3.24.2"
+		"zod": "^4.0.17"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",

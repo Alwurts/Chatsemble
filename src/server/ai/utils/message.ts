@@ -1,7 +1,8 @@
 import type { ChatRoomMessage } from "@shared/types";
-import type { Message } from "ai";
+import { convertToModelMessages, type ModelMessage, type UIMessage } from "ai";
 
-function chatRoomMessageToAIMessage({
+function chatRoomMessageToUIMessage({
+	// TODO
 	message,
 	isNew,
 	agentIdForAssistant,
@@ -9,7 +10,7 @@ function chatRoomMessageToAIMessage({
 	message: ChatRoomMessage;
 	isNew: boolean;
 	agentIdForAssistant?: string;
-}): Message {
+}): UIMessage {
 	const role = agentIdForAssistant
 		? message.member.id === agentIdForAssistant
 			? "assistant"
@@ -20,57 +21,65 @@ function chatRoomMessageToAIMessage({
 
 	const messageMetadata = `<message-metadata member-id="${message.member.id}" member-name="${message.member.name}" member-type="${message.member.type}" is-new-message="${isNew}" />`;
 
-	const content =
-		message.content.trim().length > 0
-			? `${messageMetadata}\n\n${message.content}`
-			: messageMetadata;
-
-	const partsWithContent =
-		message.content.trim().length > 0
-			? [
-					{
-						type: "text" as const,
-						text: content,
-					},
-				]
-			: [];
-
-	const toolInvocations = message.toolUses.map((toolUse) => {
-		if (toolUse.type === "tool-result") {
+	const parts = message.parts.map((part) => {
+		if (part.type === "text") {
 			return {
-				type: "tool-invocation" as const,
-				toolInvocation: {
-					state: "result" as const,
-					toolCallId: toolUse.toolCallId,
-					toolName: toolUse.toolName,
-					args: toolUse.args,
-					result: toolUse.result,
-				},
+				...part,
+				text: `${messageMetadata}\n\n${part.text}`,
 			};
 		}
-		return {
-			type: "tool-invocation" as const,
-			toolInvocation: {
-				state: "call" as const,
-				toolCallId: toolUse.toolCallId,
-				toolName: toolUse.toolName,
-				args: toolUse.args,
-			},
-		};
+		return part;
 	});
 
-	const parts = [...partsWithContent, ...toolInvocations];
+	// const content =
+	// 	message.content.trim().length > 0
+	// 		? `${messageMetadata}\n\n${message.content}`
+	// 		: messageMetadata;
+
+	// const partsWithContent =
+	// 	message.content.trim().length > 0
+	// 		? [
+	// 				{
+	// 					type: "text" as const,
+	// 					text: content,
+	// 				},
+	// 			]
+	// 		: [];
+
+	// const toolInvocations = message.toolUses.map((toolUse) => {
+	// 	if (toolUse.type === "tool-result") {
+	// 		return {
+	// 			type: "tool-invocation" as const,
+	// 			toolInvocation: {
+	// 				state: "result" as const,
+	// 				toolCallId: toolUse.toolCallId,
+	// 				toolName: toolUse.toolName,
+	// 				args: toolUse.args,
+	// 				result: toolUse.result,
+	// 			},
+	// 		};
+	// 	}
+	// 	return {
+	// 		type: "tool-invocation" as const,
+	// 		toolInvocation: {
+	// 			state: "call" as const,
+	// 			toolCallId: toolUse.toolCallId,
+	// 			toolName: toolUse.toolName,
+	// 			args: toolUse.args,
+	// 		},
+	// 	};
+	// });
+
+	// const parts = [...partsWithContent, ...toolInvocations];
 
 	return {
 		id: message.id.toString(),
-		role: role,
-		content,
+		role,
 		parts,
-		createdAt: new Date(message.createdAt),
 	};
 }
 
-export function contextAndNewchatRoomMessagesToAIMessages({
+export function contextAndNewchatRoomMessagesToModelMessages({
 	contextMessages,
 	newMessages,
 	agentIdForAssistant,
@@ -78,20 +87,24 @@ export function contextAndNewchatRoomMessagesToAIMessages({
 	contextMessages: ChatRoomMessage[];
 	newMessages: ChatRoomMessage[];
 	agentIdForAssistant?: string;
-}): Message[] {
-	const contextAIMessages: Message[] = contextMessages.map((msg) =>
-		chatRoomMessageToAIMessage({
-			message: msg,
-			isNew: false,
-			agentIdForAssistant,
-		}),
+}): ModelMessage[] {
+	const contextAIMessages: ModelMessage[] = convertToModelMessages(
+		contextMessages.map((msg) =>
+			chatRoomMessageToUIMessage({
+				message: msg,
+				isNew: false,
+				agentIdForAssistant,
+			}),
+		),
 	);
-	const newAIMessages: Message[] = newMessages.map((msg) =>
-		chatRoomMessageToAIMessage({
-			message: msg,
-			isNew: true,
-			agentIdForAssistant,
-		}),
+	const newAIMessages: ModelMessage[] = convertToModelMessages(
+		newMessages.map((msg) =>
+			chatRoomMessageToUIMessage({
+				message: msg,
+				isNew: true,
+				agentIdForAssistant,
+			}),
+		),
 	);
 
 	return [...contextAIMessages, ...newAIMessages];

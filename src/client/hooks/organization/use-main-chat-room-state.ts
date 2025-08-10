@@ -99,11 +99,16 @@ export function useMainChatRoomState({
 			}
 
 			const newMessagePartial = createChatRoomMessagePartial({
-				content: value.content,
+				parts: [
+					{
+						type: "text",
+						text: value.content,
+					},
+				],
 				mentions: value.mentions,
-				toolUses: [],
 				threadId: null,
 				roomId,
+				status: "completed",
 			});
 
 			const wsMessage: WsMessageChatRoomMessageSend = {

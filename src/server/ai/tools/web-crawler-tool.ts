@@ -1,10 +1,10 @@
-import { env } from "cloudflare:workers";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import FirecrawlApp, {
 	type FirecrawlDocumentMetadata,
 } from "@mendable/firecrawl-js";
 import type { AgentToolAnnotation, ToolSource } from "@shared/types";
-import { type DataStreamWriter, generateObject, tool } from "ai";
+import { type UIMessageStreamWriter, generateObject, tool } from "ai";
+import { env } from "cloudflare:workers";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 
@@ -56,11 +56,11 @@ const synthesizedResultSchema = z.object({
 
 type SynthesizedResult = z.infer<typeof synthesizedResultSchema>;
 
-export const webCrawlerTool = (dataStream: DataStreamWriter) =>
+export const webCrawlerTool = (dataStream: UIMessageStreamWriter) =>
 	tool({
 		description: `Performs web crawling to answer a query using provided sources, synthesizing results and returning sources. Allows specifying crawl depth and max pages per source.
 			- NEVER call this tool multiple times in a row. Only call it once, if there is multiple queries combine them into one so that you only call this tool once.`,
-		parameters: z.object({
+		inputSchema: z.object({
 			query: z
 				.string()
 				.describe("The specific query requiring web information."),
@@ -120,7 +120,10 @@ export const webCrawlerTool = (dataStream: DataStreamWriter) =>
 				status: "processing",
 				timestamp: Date.now(),
 			} satisfies AgentToolAnnotation;
-			dataStream.writeMessageAnnotation(startAnnotation);
+			dataStream.write({
+				type: "data-message-annotation",
+				data: startAnnotation,
+			});
 
 			const tasks = createTasks(relevantSources);
 			const results = await executeTasks({
@@ -163,7 +166,10 @@ export const webCrawlerTool = (dataStream: DataStreamWriter) =>
 					status: "failed",
 					timestamp: Date.now(),
 				} satisfies AgentToolAnnotation;
-				dataStream.writeMessageAnnotation(noDataAnnotation);
+				dataStream.write({
+					type: "data-message-annotation",
+					data: noDataAnnotation,
+				});
 			}
 
 			const sources = constructFinalSources(results);
@@ -184,7 +190,10 @@ export const webCrawlerTool = (dataStream: DataStreamWriter) =>
 				data: { durationMs: overallDuration, sourceCount: sources.length },
 				timestamp: Date.now(),
 			} satisfies AgentToolAnnotation;
-			dataStream.writeMessageAnnotation(finalAnnotation);
+			dataStream.write({
+				type: "data-message-annotation",
+				data: finalAnnotation,
+			});
 
 			return { synthesizedAnswer, sources, error: errorMessage };
 		},
@@ -236,7 +245,7 @@ async function executeTasks({
 	toolCallId,
 }: {
 	tasks: Array<z.infer<typeof crawlTaskSchema>>;
-	dataStream: DataStreamWriter;
+	dataStream: UIMessageStreamWriter;
 	toolCallId: string;
 }): Promise<Record<string, CrawlResult>> {
 	const app = new FirecrawlApp({ apiKey: env.FIRECRAWL_API_KEY });
@@ -252,7 +261,10 @@ async function executeTasks({
 			status: "processing",
 			timestamp: taskStartTime,
 		} satisfies AgentToolAnnotation;
-		dataStream.writeMessageAnnotation(taskStartAnnotation);
+		dataStream.write({
+			type: "data-message-annotation",
+			data: taskStartAnnotation,
+		});
 
 		try {
 			const crawlResponse = await app.crawlUrl(task.startUrl, {
@@ -292,7 +304,10 @@ async function executeTasks({
 				data: { taskId: task.taskId, durationMs: Date.now() - taskStartTime },
 				timestamp: Date.now(),
 			} satisfies AgentToolAnnotation;
-			dataStream.writeMessageAnnotation(taskCompleteAnnotation);
+			dataStream.write({
+				type: "data-message-annotation",
+				data: taskCompleteAnnotation,
+			});
 		} catch (error) {
 			const message = error instanceof Error ? error.message : "Unknown error";
 			results[task.taskId] = {
@@ -311,7 +326,10 @@ async function executeTasks({
 				status: "failed",
 				timestamp: Date.now(),
 			} satisfies AgentToolAnnotation;
-			dataStream.writeMessageAnnotation(taskErrorAnnotation);
+			dataStream.write({
+				type: "data-message-annotation",
+				data: taskErrorAnnotation,
+			});
 		}
 	}
 	return results;
@@ -369,7 +387,7 @@ function cleanCrawlResults(results: Record<string, CrawlResult>) {
 async function synthesizeResults(
 	query: string,
 	results: CrawlResult[],
-	dataStream: DataStreamWriter,
+	dataStream: UIMessageStreamWriter,
 	toolCallId: string,
 ): Promise<{ answer?: SynthesizedResult; error?: string }> {
 	const synthesisStartTime = Date.now();
@@ -381,7 +399,10 @@ async function synthesizeResults(
 		status: "processing",
 		timestamp: synthesisStartTime,
 	} satisfies AgentToolAnnotation;
-	dataStream.writeMessageAnnotation(synthesisStartAnnotation);
+	dataStream.write({
+		type: "data-message-annotation",
+		data: synthesisStartAnnotation,
+	});
 
 	try {
 		const geminiClient = createGoogleGenerativeAI({
@@ -411,7 +432,10 @@ async function synthesizeResults(
 			data: { durationMs: Date.now() - synthesisStartTime },
 			timestamp: Date.now(),
 		} satisfies AgentToolAnnotation;
-		dataStream.writeMessageAnnotation(synthesisCompleteAnnotation);
+		dataStream.write({
+			type: "data-message-annotation",
+			data: synthesisCompleteAnnotation,
+		});
 
 		return { answer: synthesisObject };
 	} catch (error) {
@@ -424,7 +448,10 @@ async function synthesizeResults(
 			status: "failed",
 			timestamp: Date.now(),
 		} satisfies AgentToolAnnotation;
-		dataStream.writeMessageAnnotation(synthesisErrorAnnotation);
+		dataStream.write({
+			type: "data-message-annotation",
+			data: synthesisErrorAnnotation,
+		});
 		return { error: errMsg };
 	}
 }

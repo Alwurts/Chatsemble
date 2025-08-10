@@ -3,7 +3,7 @@ import type { ChatRoomDbServices } from "@server/organization-do/db/services";
 import { tool } from "ai";
 import { z } from "zod";
 
-const createDocumentArgsSchema = z.object({
+const createDocumentInputSchema = z.object({
 	title: z
 		.string()
 		.min(1)
@@ -14,11 +14,20 @@ const createDocumentArgsSchema = z.object({
 		.describe("The full markdown content for the document."),
 });
 
-export type CreateDocumentArgs = z.infer<typeof createDocumentArgsSchema>;
+const createDocumentOutputSchema = z
+	.object({
+		success: z.literal(true),
+		documentId: z.string(),
+		title: z.string(),
+	})
+	.or(
+		z.object({
+			success: z.literal(false),
+			error: z.string(),
+		}),
+	);
 
-export type CreateDocumentResult =
-	| { success: true; documentId: string; title: string }
-	| { success: false; error: string };
+export type CreateDocumentOutput = z.infer<typeof createDocumentOutputSchema>;
 
 export const createDocumentTool = ({
 	createDocument,
@@ -34,8 +43,9 @@ export const createDocumentTool = ({
 			The content of the document should be in markdown format.
 			The content of the document should not include any extra questions or instructions that are meant for the user, instead it should be a clear professional document that outlines the information you have found.
 			`,
-		parameters: createDocumentArgsSchema,
-		execute: async ({ title, content }): Promise<CreateDocumentResult> => {
+		inputSchema: createDocumentInputSchema,
+		outputSchema: createDocumentOutputSchema,
+		execute: async ({ title, content }): Promise<CreateDocumentOutput> => {
 			try {
 				const newDocument = await createDocument({
 					roomId,

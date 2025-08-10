@@ -5,15 +5,10 @@ import {
 	getWorkflowAgentUserPrompt,
 } from "@server/ai/prompts/agent/workflow-prompt";
 import { routeMessageToAgentSystemPrompt } from "@server/ai/prompts/router-prompt";
-import { agentToolSetKeys } from "@server/ai/tools";
-import { createDocumentTool } from "@server/ai/tools/create-document-tool";
 import { createMessageThreadTool } from "@server/ai/tools/create-thread-tool";
-import { deepResearchTool } from "@server/ai/tools/deep-search-tool";
-import { scheduleWorkflowTool } from "@server/ai/tools/schedule-workflow-tool";
-import { webCrawlerTool } from "@server/ai/tools/web-crawler-tool";
 import { webSearchTool } from "@server/ai/tools/web-search-tool";
-import { processDataStream } from "@server/ai/utils/data-stream";
-import { contextAndNewchatRoomMessagesToAIMessages } from "@server/ai/utils/message";
+import { contextAndNewchatRoomMessagesToModelMessages } from "@server/ai/utils/message";
+import { createChatRoomMessagePartial } from "@shared/lib/chat";
 import type {
 	ChatRoom,
 	ChatRoomMember,
@@ -21,12 +16,13 @@ import type {
 	Document,
 	WorkflowPartial,
 } from "@shared/types";
+import type { ModelMessage, UIMessageStreamWriter } from "ai";
 import {
-	type DataStreamWriter,
-	type Message,
-	createDataStreamResponse,
+	createUIMessageStream,
 	generateObject,
+	readUIMessageStream,
 	smoothStream,
+	stepCountIs,
 	streamText,
 } from "ai";
 import { z } from "zod";
@@ -86,8 +82,7 @@ export class Agents {
 			threadId: null,
 			messages: [
 				{
-					id: "1",
-					content: workflowPrompt,
+					content: [{ type: "text", text: workflowPrompt }],
 					role: "user",
 				},
 			],
@@ -217,7 +212,7 @@ export class Agents {
 
 			const agentList = await this.deps.dbServices.getAgentsByIds(agentIds);
 
-			const aiMessages = contextAndNewchatRoomMessagesToAIMessages({
+			const aiMessages = contextAndNewchatRoomMessagesToModelMessages({
 				contextMessages,
 				newMessages,
 			});
@@ -270,7 +265,7 @@ export class Agents {
 			throw new Error("Agent config not found");
 		}
 
-		const messages = contextAndNewchatRoomMessagesToAIMessages({
+		const messages = contextAndNewchatRoomMessagesToModelMessages({
 			contextMessages,
 			newMessages,
 			agentIdForAssistant: agentId,
@@ -299,59 +294,41 @@ export class Agents {
 		threadId: originalThreadId,
 		messages,
 		systemPrompt,
-		removeTools,
+		//removeTools,
 	}: {
 		agentId: string;
 		chatRoomId: string;
 		threadId: number | null;
-		messages: Message[];
+		messages: ModelMessage[];
 		systemPrompt: string;
 		removeTools?: string[];
 	}) => {
 		console.log("[formulateResponse] chatRoomId", chatRoomId);
 
-		let sendMessageThreadId: number | null = originalThreadId;
-		console.log("[formulateResponse] sendMessageThreadId", sendMessageThreadId);
+		// const firstMessagePartial = createChatRoomMessagePartial({
+		// 	parts: [],
+		// 	mentions: [],
+		// 	threadId: originalThreadId,
+		// 	roomId: chatRoomId,
+		// 	status: "pending",
+		// });
 
-		const agentToolSet = (dataStream: DataStreamWriter) => {
+		// let currentMessage: ChatRoomMessage | null = await this.deps.processIncomingChatMessage({
+		// 	roomId: chatRoomId,
+		// 	memberId: agentId,
+		// 	message: firstMessagePartial,
+		// 	existingMessageId: null,
+		// 	notifyAgents: false,
+		// });
+		let currentMessage: ChatRoomMessage | null = null;
+		let currentThreadId: number | null = originalThreadId;
+
+		const agentToolSet = (dataStream: UIMessageStreamWriter) => {
 			return {
-				webSearch: webSearchTool(dataStream),
-				deepResearch: deepResearchTool(dataStream),
-				webCrawl: webCrawlerTool(dataStream),
-				scheduleWorkflow: scheduleWorkflowTool({
-					createWorkflow: this.deps.createWorkflow,
-					chatRoomId,
-					agentId,
-				}),
-
-				createMessageThread: createMessageThreadTool({
-					roomId: chatRoomId,
-					onMessage: async ({ newMessagePartial }) => {
-						return await this.deps.processIncomingChatMessage({
-							roomId: chatRoomId,
-							memberId: agentId,
-							message: newMessagePartial,
-							existingMessageId: null,
-							notifyAgents: false,
-						});
-					},
-					onNewThread: (newThreadId) => {
-						console.log("[formulateResponse] onNewThread", newThreadId);
-						sendMessageThreadId = newThreadId;
-					},
-				}),
-
-				createDocument: createDocumentTool({
-					createDocument: this.deps.createDocument,
-					roomId: chatRoomId,
-					agentId,
-				}),
+				"web-search": webSearchTool(dataStream),
+				"create-message-thread": createMessageThreadTool(),
 			};
 		};
-
-		const activeTools = agentToolSetKeys.filter(
-			(tool) => !removeTools?.includes(tool),
-		);
 
 		const openAIClient = createOpenAI({
 			baseURL: this.env.AI_GATEWAY_OPENAI_URL,
@@ -359,40 +336,117 @@ export class Agents {
 		});
 
 		try {
-			const dataStreamResponse = createDataStreamResponse({
-				execute: async (dataStream) => {
-					streamText({
+			const stream = createUIMessageStream({
+				execute: ({ writer }) => {
+					const result = streamText({
 						model: openAIClient("gpt-4.1"),
 						system: systemPrompt,
-						tools: agentToolSet(dataStream),
 						messages,
-						maxSteps: 10,
+						tools: agentToolSet(writer),
+						stopWhen: stepCountIs(10),
 						experimental_transform: smoothStream({
 							chunking: "line",
 						}),
-						onError: (error) => {
-							console.error("[formulateResponse] onError", error);
-						},
-						experimental_activeTools: activeTools,
-					}).mergeIntoDataStream(dataStream);
+					});
+
+					writer.merge(result.toUIMessageStream());
 				},
 			});
 
-			await processDataStream({
-				response: dataStreamResponse,
-				roomId: chatRoomId,
-				getThreadId: () => sendMessageThreadId,
-				omitSendingTool: ["createMessageThread"],
-				onMessageSend: async ({ newMessagePartial, existingMessageId }) => {
-					return await this.deps.processIncomingChatMessage({
+			for await (const uiMessage of readUIMessageStream({
+				stream,
+			})) {
+				console.log(
+					"[formulateResponse] uiMessage",
+					JSON.stringify(uiMessage, null, 2),
+				);
+				if (!currentMessage) {
+					const newMessagePartial = createChatRoomMessagePartial({
+						parts: [],
+						mentions: [],
+						threadId: currentThreadId,
+						roomId: chatRoomId,
+						status: "pending",
+					});
+
+					currentMessage = await this.deps.processIncomingChatMessage({
 						roomId: chatRoomId,
 						memberId: agentId,
 						message: newMessagePartial,
-						existingMessageId,
+						existingMessageId: null,
+						notifyAgents: false,
+					});
+				}
+
+				const partsHaveCreateThreadToolOutputAvailable = uiMessage.parts.some(
+					(part) =>
+						part.type === "tool-create-message-thread" &&
+						part.state === "output-available",
+				);
+
+				if (partsHaveCreateThreadToolOutputAvailable) {
+					const indexOfCreateThreadTool = uiMessage.parts.findIndex(
+						(part) => part.type === "tool-create-message-thread",
+					);
+
+					const isCreateThreadToolInLastPart =
+						indexOfCreateThreadTool === uiMessage.parts.length - 1;
+
+					if (isCreateThreadToolInLastPart) {
+						const newThreadId = currentMessage.id;
+
+						currentMessage.parts = uiMessage.parts;
+						currentMessage.status = "completed";
+						await this.deps.processIncomingChatMessage({
+							roomId: chatRoomId,
+							memberId: agentId,
+							message: currentMessage,
+							existingMessageId: currentMessage.id,
+							notifyAgents: false,
+						});
+
+						console.log("New message parent thread", currentMessage);
+
+						currentMessage = null;
+						currentThreadId = newThreadId;
+					} else {
+						const slicedParts = uiMessage.parts.slice(
+							indexOfCreateThreadTool + 1,
+						);
+
+						currentMessage.parts = slicedParts;
+
+						await this.deps.processIncomingChatMessage({
+							roomId: chatRoomId,
+							memberId: agentId,
+							message: currentMessage,
+							existingMessageId: currentMessage.id,
+							notifyAgents: false,
+						});
+					}
+				} else {
+					currentMessage.parts = uiMessage.parts;
+
+					await this.deps.processIncomingChatMessage({
+						roomId: chatRoomId,
+						memberId: agentId,
+						message: currentMessage,
+						existingMessageId: currentMessage.id,
 						notifyAgents: false, // AI response shouldn't re-notify agents
 					});
-				},
-			});
+				}
+			}
+
+			if (currentMessage) {
+				currentMessage.status = "completed";
+				await this.deps.processIncomingChatMessage({
+					roomId: chatRoomId,
+					memberId: agentId,
+					message: currentMessage,
+					existingMessageId: currentMessage.id,
+					notifyAgents: false, // AI response shouldn't re-notify agents
+				});
+			}
 		} catch (error) {
 			console.error("[formulateResponse] error", error);
 		}

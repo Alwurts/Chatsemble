@@ -139,6 +139,15 @@ export class ChatRooms {
 		);
 	};
 
+	/**
+	 * Process an incoming chat message
+	 * @param memberId - The ID of the member who sent the message
+	 * @param roomId - The ID of the room the message is in
+	 * @param message - The message to process
+	 * @param existingMessageId - The ID of the existing message to update used when streaming
+	 * @param notifyAgents - Whether to notify agents about the message
+	 * @returns The processed chat room message
+	 */
 	processIncomingChatMessage = async ({
 		memberId,
 		roomId,
@@ -158,17 +167,17 @@ export class ChatRooms {
 			chatRoomMessage = await this.deps.dbServices.updateChatRoomMessage(
 				existingMessageId,
 				{
-					content: message.content,
+					parts: message.parts,
 					mentions: message.mentions,
-					toolUses: message.toolUses,
+					status: message.status,
 				},
 			);
 		} else {
 			chatRoomMessage = await this.deps.dbServices.insertChatRoomMessage({
 				memberId,
-				content: message.content,
+				parts: message.parts,
 				mentions: message.mentions,
-				toolUses: message.toolUses,
+				status: message.status,
 				threadId: message.threadId,
 				roomId,
 				metadata: {

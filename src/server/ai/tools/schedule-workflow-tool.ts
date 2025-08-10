@@ -4,7 +4,7 @@ import { tool } from "ai";
 import { CronExpressionParser } from "cron-parser";
 import { z } from "zod";
 
-const scheduleWorkflowArgsSchema = z.object({
+const scheduleWorkflowInputSchema = z.object({
 	scheduleExpression: z
 		.string()
 		.describe(
@@ -20,11 +20,22 @@ const scheduleWorkflowArgsSchema = z.object({
 		.describe("The JSON object defining the steps of the workflow."),
 });
 
-export type ScheduleWorkflowArgs = z.infer<typeof scheduleWorkflowArgsSchema>;
+const scheduleWorkflowOutputSchema = z
+	.object({
+		success: z.literal(true),
+		workflowId: z.string(),
+		nextRun: z.string().optional(),
+	})
+	.or(
+		z.object({
+			success: z.literal(false),
+			error: z.string(),
+		}),
+	);
 
-export type ScheduleWorkflowResult =
-	| { success: true; workflowId: string; nextRun?: string }
-	| { success: false; error: string };
+export type ScheduleWorkflowOutput = z.infer<
+	typeof scheduleWorkflowOutputSchema
+>;
 
 export const scheduleWorkflowTool = ({
 	createWorkflow,
@@ -40,12 +51,13 @@ export const scheduleWorkflowTool = ({
 	tool({
 		description:
 			"Schedules a multi-step workflow to be executed at a specified time or recurring interval.",
-		parameters: scheduleWorkflowArgsSchema,
+		inputSchema: scheduleWorkflowInputSchema,
+		outputSchema: scheduleWorkflowOutputSchema,
 		execute: async ({
 			scheduleExpression,
 			goal,
 			steps,
-		}): Promise<ScheduleWorkflowResult> => {
+		}): Promise<ScheduleWorkflowOutput> => {
 			try {
 				let nextExecutionTime: number;
 				let isRecurring: boolean;

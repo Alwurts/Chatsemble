@@ -89,7 +89,7 @@ export interface AgentToolAnnotation {
 	data?: any;
 }
 
-export interface AgentToolPartial {
+interface AgentToolPartial {
 	toolCallId: string;
 	toolName: string;
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>

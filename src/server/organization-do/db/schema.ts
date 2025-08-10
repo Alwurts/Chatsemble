@@ -1,10 +1,11 @@
 import type {
-	AgentToolUse,
 	ChatMentions,
 	ChatMessageMetadata,
+	ChatMessageStatus,
 	ChatMessageThreadMetadata,
 	ChatRoomMemberRole,
 	ChatRoomMemberType,
+	ChatRoomMessagePartial,
 	ChatRoomType,
 	EmojiUsage,
 	LanguageStyle,
@@ -56,10 +57,10 @@ export const chatRoomMember = sqliteTable(
 
 export const chatMessage = sqliteTable("chat_message", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
-	content: text("content").notNull(),
+	status: text("status").$type<ChatMessageStatus>().notNull(),
 	mentions: text("mentions", { mode: "json" }).$type<ChatMentions>().notNull(),
-	toolUses: text("tool_uses", { mode: "json" })
-		.$type<AgentToolUse[]>() // TODO: Add versioning to columns that are json type
+	parts: text("parts", { mode: "json" })
+		.$type<ChatRoomMessagePartial["parts"]>() // TODO: Add versioning to columns that are json type
 		.notNull(),
 	memberId: text("member_id").notNull(),
 	createdAt: integer("created_at", { mode: "number" })

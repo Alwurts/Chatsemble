@@ -7,8 +7,8 @@ import type {
 	WsChatIncomingMessage,
 	WsChatOutgoingMessage,
 } from "@shared/types";
-import { drizzle } from "drizzle-orm/durable-sqlite";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
+import { drizzle } from "drizzle-orm/durable-sqlite";
 import { migrate } from "drizzle-orm/durable-sqlite/migrator";
 import { Agents } from "./agent";
 import { ChatRooms } from "./chat-room";
@@ -246,15 +246,12 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 		message: WsChatOutgoingMessage,
 		targetRoomId: string,
 	) => {
-		console.log(
-			`Broadcasting message type ${message.type} to active sessions in room ${targetRoomId}`,
-		);
-		let recipients = 0;
+		//let recipients = 0;
 		for (const [ws, session] of this.sessions.entries()) {
 			if (session.activeRoomId === targetRoomId) {
 				try {
 					ws.send(JSON.stringify(message));
-					recipients++;
+					//recipients++;
 				} catch (e) {
 					console.error(
 						`Failed to send message to WebSocket for user ${session.userId} in room ${targetRoomId}:`,
@@ -264,9 +261,9 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 				}
 			}
 		}
-		console.log(
-			`Message broadcasted to ${recipients} recipients in room ${targetRoomId}.`,
-		);
+		// console.log(
+		// 	`Message broadcasted to ${recipients} recipients in room ${targetRoomId}.`,
+		// );
 	};
 
 	handleUserInitRequest = async (session: Session) => {

@@ -64,23 +64,11 @@ export function ToolInvocationName({
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export function ToolInvocationResult({ result }: { result: any }) {
+export function ToolInvocationRawData({ data }: { data: any }) {
 	return (
 		<div className="pl-4 text-sm">
-			<div className="font-medium mb-1">Result:</div>
-			<pre className="whitespace-pre-wrap font-mono text-xs bg-muted p-2 rounded-md overflow-auto">
-				{JSON.stringify(result, null, 2)}
-			</pre>
-		</div>
-	);
-}
-
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export function ToolInvocationArgs({ args }: { args: any }) {
-	return (
-		<div className="pl-4 text-sm">
-			<pre className="whitespace-pre-wrap font-mono text-xs bg-muted p-2 rounded-md overflow-auto">
-				{JSON.stringify(args, null, 2)}
+			<pre className="whitespace-pre-wrap break-all font-mono text-xs bg-muted p-2 rounded-md overflow-auto mt-1">
+				{JSON.stringify(data, null, 2)}
 			</pre>
 		</div>
 	);

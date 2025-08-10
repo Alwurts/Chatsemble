@@ -1,19 +1,40 @@
-import { env } from "cloudflare:workers";
 import type { AgentToolAnnotation, ToolSource } from "@shared/types";
-import { type DataStreamWriter, tool } from "ai";
+import { type UIMessageStreamWriter, tool } from "ai";
+import { env } from "cloudflare:workers";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 
-// TODO: Export result andd args types for tools
+const webSearchInputSchema = z.object({
+	query: z.string().describe("The search query"),
+});
 
-export const webSearchTool = (dataStream: DataStreamWriter) =>
+const webSearchOutputSchema = z
+	.object({
+		sources: z.array(
+			z.object({
+				url: z.string(),
+				title: z.string(),
+				description: z.string().optional(),
+				icon: z.string().optional(),
+			}),
+		),
+	})
+	.or(
+		z.object({
+			success: z.literal(false),
+			error: z.string(),
+		}),
+	);
+
+export type WebSearchOutput = z.infer<typeof webSearchOutputSchema>;
+
+export const webSearchTool = (dataStream: UIMessageStreamWriter) =>
 	tool({
 		description:
 			"Use this tool when the user asks you to search for any kind of information or requires more information about a topic",
-		parameters: z.object({
-			query: z.string().describe("The search query"),
-		}),
-		execute: async ({ query }, { toolCallId }) => {
+		inputSchema: webSearchInputSchema,
+		outputSchema: webSearchOutputSchema,
+		execute: async ({ query }, { toolCallId }): Promise<WebSearchOutput> => {
 			try {
 				// Step 1: Send "starting search" annotation
 				const startAnnotation = {
@@ -25,7 +46,10 @@ export const webSearchTool = (dataStream: DataStreamWriter) =>
 					status: "processing",
 					timestamp: Date.now(),
 				} satisfies AgentToolAnnotation;
-				dataStream.writeMessageAnnotation(startAnnotation);
+				dataStream.write({
+					type: "data-message-annotation",
+					data: startAnnotation,
+				});
 
 				// Step 2: Perform the search
 				const searchParams = new URLSearchParams({ q: query });
@@ -87,7 +111,10 @@ export const webSearchTool = (dataStream: DataStreamWriter) =>
 					timestamp: Date.now(),
 				} satisfies AgentToolAnnotation;
 
-				dataStream.writeMessageAnnotation(endAnnotation);
+				dataStream.write({
+					type: "data-message-annotation",
+					data: endAnnotation,
+				});
 
 				// Step 5: Return the structured results
 				return { sources: processedResults };
@@ -102,7 +129,10 @@ export const webSearchTool = (dataStream: DataStreamWriter) =>
 					status: "failed",
 					timestamp: Date.now(),
 				} satisfies AgentToolAnnotation;
-				dataStream.writeMessageAnnotation(errorAnnotation);
+				dataStream.write({
+					type: "data-message-annotation",
+					data: errorAnnotation,
+				});
 				return { sources: [], error: errorMessage };
 			}
 		},
