@@ -1,15 +1,17 @@
-import type { InferUITools, UIMessage } from "ai";
+import type { InferUITools, ToolUIPart, UIMessage } from "ai";
 import { z } from "zod";
 import type { AgentToolSet } from "../../server/ai/tools";
 
 const aiMetadataSchema = z.record(z.string(), z.unknown());
 
-type AiMetadata = z.infer<typeof aiMetadataSchema>;
+type AIMetadata = z.infer<typeof aiMetadataSchema>;
 
 const aiDataPartSchema = z.record(z.string(), z.unknown());
 
-type AiDataPart = z.infer<typeof aiDataPartSchema>;
+type AIDataPart = z.infer<typeof aiDataPartSchema>;
 
-type AiTools = InferUITools<AgentToolSet>;
+type AITools = InferUITools<AgentToolSet>;
 
-export type AiUIMessage = UIMessage<AiMetadata, AiDataPart, AiTools>;
+export type AIToolUIPart = ToolUIPart<AITools>;
+
+export type AIUIMessage = UIMessage<AIMetadata, AIDataPart, AITools>;

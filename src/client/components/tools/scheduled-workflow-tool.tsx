@@ -40,7 +40,9 @@ export function ScheduledWorkflowTool({ toolUse }: { toolUse: AgentToolUse }) {
 
 function ScheduledWorkflowToolCallView({
 	args,
-}: { args?: ScheduleWorkflowInput }) {
+}: {
+	args?: ScheduleWorkflowInput;
+}) {
 	if (!args) {
 		return null;
 	}
@@ -78,7 +80,10 @@ function ScheduledWorkflowToolCallView({
 function ScheduledWorkflowToolResultView({
 	args,
 	result,
-}: { args?: ScheduleWorkflowInput; result?: ScheduleWorkflowOutput }) {
+}: {
+	args?: ScheduleWorkflowInput;
+	result?: ScheduleWorkflowOutput;
+}) {
 	return (
 		<div className="flex flex-col gap-3">
 			{args && <ScheduledWorkflowToolCallView args={args} />}
@@ -89,7 +94,9 @@ function ScheduledWorkflowToolResultView({
 
 function ScheduledWorkflowResultList({
 	result,
-}: { result: ScheduleWorkflowOutput | undefined }) {
+}: {
+	result: ScheduleWorkflowOutput | undefined;
+}) {
 	if (!result) {
 		return null;
 	}

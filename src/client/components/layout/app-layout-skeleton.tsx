@@ -17,7 +17,7 @@ function SkeletonSidebar() {
 				{Array.from({ length: 5 }).map((_, i) => (
 					<Skeleton
 						key={`skeleton-item-${
-							// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+							// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton items
 							i
 						}`}
 						className="h-8 w-full mb-2"

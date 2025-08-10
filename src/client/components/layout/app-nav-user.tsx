@@ -1,7 +1,5 @@
 "use client";
 
-import { ChevronsUpDown, LogOut } from "lucide-react";
-
 import {
 	Avatar,
 	AvatarFallback,
@@ -24,6 +22,7 @@ import {
 import { Skeleton } from "@client/components/ui/skeleton";
 import { authClient } from "@client/lib/auth-client";
 import { useRouter } from "@tanstack/react-router";
+import { ChevronsUpDown, LogOut } from "lucide-react";
 
 export function AppNavUser() {
 	const { isMobile } = useSidebar();

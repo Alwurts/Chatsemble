@@ -5,7 +5,7 @@ import {
 	useOrganizationConnection,
 } from "@client/hooks/organization/use-organization-connection";
 
-import { type ReactNode, createContext, useContext } from "react";
+import { createContext, type ReactNode, useContext } from "react";
 
 const OrganizationConnectionContext = createContext<ReturnType<
 	typeof useOrganizationConnection

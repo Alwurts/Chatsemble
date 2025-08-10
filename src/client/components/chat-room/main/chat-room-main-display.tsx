@@ -1,18 +1,17 @@
 "use client";
 
 import {
-	ChatMessageAction,
-	ChatMessageActionsArea,
-	ChatMessageThread,
-} from "@client/components/ui/chat-message";
-import { ChatMessageArea } from "@client/components/ui/chat-message-area";
-
-import {
 	ChatMessagesSkeleton,
 	ChatRoomMessage,
 } from "@client/components/chat-room/chat-room-message";
 import { useAuthSession } from "@client/components/providers/auth-provider";
 import { useOrganizationConnectionContext } from "@client/components/providers/organization-connection-provider";
+import {
+	ChatMessageAction,
+	ChatMessageActionsArea,
+	ChatMessageThread,
+} from "@client/components/ui/chat-message";
+import { ChatMessageArea } from "@client/components/ui/chat-message-area";
 import {
 	ChatInput,
 	ChatInputSubmit,

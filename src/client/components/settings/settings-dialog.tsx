@@ -1,8 +1,5 @@
 "use client";
 
-import { Home, User } from "lucide-react";
-import type * as React from "react";
-
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -28,6 +25,8 @@ import {
 	SidebarMenuItem,
 	SidebarProvider,
 } from "@client/components/ui/sidebar";
+import { Home, User } from "lucide-react";
+import type * as React from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { OrganizationForm } from "./organization-form";
 import { ProfileForm } from "./profile-form";

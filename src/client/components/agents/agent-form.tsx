@@ -205,7 +205,7 @@ export function AgentForm({ className }: React.ComponentProps<"div">) {
 										iconMap={{
 											simple: FileText,
 											technical: Binary,
-											// biome-ignore lint/complexity/useLiteralKeys: <explanation>
+											// biome-ignore lint/complexity/useLiteralKeys: dynamic key needed for industry-specific
 											["industry-specific"]: Building,
 										}}
 									/>

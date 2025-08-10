@@ -1,3 +1,4 @@
+import { ConfirmationDialog } from "@client/components/common/confirmation-dialog";
 import { useOrganizationConnectionContext } from "@client/components/providers/organization-connection-provider";
 import {
 	Avatar,
@@ -14,13 +15,11 @@ import {
 	CardTitle,
 } from "@client/components/ui/card";
 import { ScrollArea } from "@client/components/ui/scroll-area";
-import { formatDistanceToNow } from "date-fns";
-import { Calendar, Clock, Goal, Repeat, Trash2 } from "lucide-react";
-
-import { ConfirmationDialog } from "@client/components/common/confirmation-dialog";
 import { honoClient } from "@client/lib/api-client";
 import type { Workflow } from "@shared/types";
 import { useMutation } from "@tanstack/react-query";
+import { formatDistanceToNow } from "date-fns";
+import { Calendar, Clock, Goal, Repeat, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 

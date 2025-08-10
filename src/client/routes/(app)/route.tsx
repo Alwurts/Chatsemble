@@ -4,9 +4,9 @@ import { OrganizationConnectionProvider } from "@client/components/providers/org
 import { SidebarProvider } from "@client/components/ui/sidebar";
 import { authClient } from "@client/lib/auth-client";
 import {
+	createFileRoute,
 	Navigate,
 	Outlet,
-	createFileRoute,
 	useSearch,
 } from "@tanstack/react-router";
 

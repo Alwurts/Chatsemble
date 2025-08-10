@@ -60,7 +60,10 @@ function CreateDocumentToolCallView({ args }: { args?: CreateDocumentInput }) {
 function CreateDocumentToolResultView({
 	result,
 	content,
-}: { result?: CreateDocumentOutput; content: string }) {
+}: {
+	result?: CreateDocumentOutput;
+	content: string;
+}) {
 	if (!result) {
 		return null;
 	}

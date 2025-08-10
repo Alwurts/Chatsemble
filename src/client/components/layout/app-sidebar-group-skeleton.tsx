@@ -10,7 +10,9 @@ import { Skeleton } from "@client/components/ui/skeleton";
 
 export function AppSidebarGroupSkeleton({
 	listLength,
-}: { listLength: number }) {
+}: {
+	listLength: number;
+}) {
 	return (
 		<SidebarGroup className="group-data-[collapsible=icon]:hidden">
 			<SidebarGroupLabel>
@@ -21,7 +23,7 @@ export function AppSidebarGroupSkeleton({
 			</SidebarGroupAction>
 			<SidebarMenu>
 				{Array.from({ length: listLength }).map((_, index) => (
-					// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+					// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton items
 					<SidebarMenuItem key={index}>
 						<SidebarMenuSkeleton />
 					</SidebarMenuItem>

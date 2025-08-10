@@ -175,7 +175,7 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 				default:
 					console.warn(
 						`Received unhandled message type: ${
-							// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+							// biome-ignore lint/suspicious/noExplicitAny: unknown message structure
 							(parsedMsg as any)?.type
 						}`,
 					);

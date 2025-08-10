@@ -1,10 +1,3 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { CheckCircle2 } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-
 import { LogoIcon } from "@client/components/icons/logo-icon";
 import {
 	Alert,
@@ -29,9 +22,14 @@ import {
 import { Input } from "@client/components/ui/input";
 import { authClient } from "@client/lib/auth-client";
 import { cn } from "@client/lib/utils";
-
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import * as z from "zod";
 
 export const Route = createFileRoute("/auth/signup")({
 	component: SignupForm,

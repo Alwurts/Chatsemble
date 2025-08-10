@@ -58,6 +58,7 @@ export function useWebSocket({
 		return `${wsProtocol}://${apiHost}/websocket/organization/${orgId}`;
 	}, []);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: scheduleReconnect is a dependency of connect
 	const connect = useCallback(() => {
 		if (
 			isConnectingRef.current ||

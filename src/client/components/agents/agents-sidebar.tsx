@@ -13,7 +13,7 @@ import {
 import { honoClient } from "@client/lib/api-client";
 import type { Agent } from "@shared/types";
 import { useQuery } from "@tanstack/react-query";
-import { Link, getRouteApi } from "@tanstack/react-router";
+import { getRouteApi, Link } from "@tanstack/react-router";
 import {
 	AlertCircle,
 	MoreHorizontal,
@@ -61,11 +61,7 @@ export function AgentsSidebar() {
 	);
 }
 
-function AgentGroup({
-	agents,
-}: {
-	agents: Agent[];
-}) {
+function AgentGroup({ agents }: { agents: Agent[] }) {
 	const route = getRouteApi("/(app)/agents");
 	const { agentId } = route.useSearch();
 	const { isMobile } = useSidebar();

@@ -78,7 +78,7 @@ export function ChatMessagesSkeleton({ items = 3 }: { items?: number }) {
 	return (
 		<>
 			{[...Array(items)].map((_, i) => (
-				// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+				// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton items
 				<ChatMessageSkeleton key={i} />
 			))}
 		</>

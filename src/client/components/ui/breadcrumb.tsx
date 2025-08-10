@@ -1,8 +1,7 @@
+import { cn } from "@client/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import { ChevronRight, MoreHorizontal } from "lucide-react";
 import type * as React from "react";
-
-import { cn } from "@client/lib/utils";
 
 function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
 	return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />;
@@ -51,7 +50,8 @@ function BreadcrumbLink({
 
 function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
 	return (
-		// biome-ignore lint/a11y/useFocusableInteractive: <explanation>
+		// biome-ignore lint/a11y/useFocusableInteractive: Need to use span for aria-current="page"
+		// biome-ignore lint/a11y/useSemanticElements: Need to use span for aria-current="page"
 		<span
 			data-slot="breadcrumb-page"
 			role="link"
@@ -101,10 +101,10 @@ function BreadcrumbEllipsis({
 
 export {
 	Breadcrumb,
-	BreadcrumbList,
+	BreadcrumbEllipsis,
 	BreadcrumbItem,
 	BreadcrumbLink,
+	BreadcrumbList,
 	BreadcrumbPage,
 	BreadcrumbSeparator,
-	BreadcrumbEllipsis,
 };

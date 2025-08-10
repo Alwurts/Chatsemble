@@ -1,8 +1,5 @@
 "use client";
 
-import { Bot, MessagesSquare, PanelLeft, Search, Settings } from "lucide-react";
-import type * as React from "react";
-
 import { ThemeToggle } from "@client/components/common/theme-toggle";
 import { LogoIcon } from "@client/components/icons/logo-icon";
 import { AppNavUser } from "@client/components/layout/app-nav-user";
@@ -23,6 +20,8 @@ import {
 } from "@client/components/ui/sidebar";
 import { cn } from "@client/lib/utils";
 import { Link, useRouterState } from "@tanstack/react-router";
+import { Bot, MessagesSquare, PanelLeft, Search, Settings } from "lucide-react";
+import type * as React from "react";
 import { useState } from "react";
 
 // Updated sample data with activeMatch regex

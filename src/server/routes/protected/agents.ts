@@ -1,10 +1,10 @@
-import { Hono } from "hono";
-
 import { zValidator } from "@hono/zod-validator";
 import type { HonoContextWithAuth } from "@server/types/hono";
 import type { Agent } from "@shared/types";
 import { createAgentSchema } from "@shared/types";
+import { Hono } from "hono";
 import { nanoid } from "nanoid";
+
 // TODO: Add permissions check to agents routes
 
 const app = new Hono<HonoContextWithAuth>()

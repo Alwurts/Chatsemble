@@ -1,28 +1,23 @@
 "use client";
 
 import { AgentNotFound } from "@client/components/agents/agent-placeholder";
-
-import { honoClient } from "@client/lib/api-client";
-import { useQuery } from "@tanstack/react-query";
-import { AgentSkeleton } from "./agent-skeleton";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-
 import { Form } from "@client/components/ui/form";
+import { honoClient } from "@client/lib/api-client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { type AgentFormValues, createAgentSchema } from "@shared/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bot } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import {
 	AppHeader,
 	AppHeaderIcon,
 	AppHeaderSeparator,
 	AppHeaderTitle,
 } from "../layout/app-header";
-
-import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { AgentForm } from "./agent-form";
+import { AgentSkeleton } from "./agent-skeleton";
 
 export function AgentEdit({ agentId }: { agentId: string }) {
 	const { data: agent, isLoading } = useQuery({

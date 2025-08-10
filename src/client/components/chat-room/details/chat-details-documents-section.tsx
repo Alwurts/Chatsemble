@@ -12,8 +12,7 @@ import { ScrollArea } from "@client/components/ui/scroll-area";
 import { honoClient } from "@client/lib/api-client";
 import type { Document } from "@shared/types/document";
 import { useMutation } from "@tanstack/react-query";
-import { FileText } from "lucide-react";
-import { Trash2 } from "lucide-react";
+import { FileText, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 

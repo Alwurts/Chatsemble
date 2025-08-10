@@ -1,10 +1,9 @@
-import { Hono } from "hono";
-
 import {
 	honoAuthCheckMiddleware,
 	honoAuthMiddleware,
 } from "@server/middleware/auth";
 import type { HonoContextWithAuth } from "@server/types/hono";
+import { Hono } from "hono";
 
 const app = new Hono<HonoContextWithAuth>()
 	.use(honoAuthMiddleware)

@@ -8,7 +8,9 @@ import { SidebarMenuButton } from "../ui/sidebar";
 
 export const ThemeToggle = ({
 	variant = "default",
-}: { variant?: "default" | "icon" }) => {
+}: {
+	variant?: "default" | "icon";
+}) => {
 	const { theme, setTheme } = useTheme();
 
 	const toggleTheme = useCallback(() => {

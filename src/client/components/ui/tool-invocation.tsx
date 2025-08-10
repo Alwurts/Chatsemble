@@ -19,7 +19,10 @@ export function ToolInvocation({
 export function ToolInvocationHeader({
 	children,
 	className,
-}: { children: React.ReactNode; className?: string }) {
+}: {
+	children: React.ReactNode;
+	className?: string;
+}) {
 	return (
 		<div className={cn("flex flex-col items-stretch gap-2 px-4", className)}>
 			{children}
@@ -30,7 +33,10 @@ export function ToolInvocationHeader({
 export function ToolInvocationContent({
 	children,
 	className,
-}: { children: React.ReactNode; className?: string }) {
+}: {
+	children: React.ReactNode;
+	className?: string;
+}) {
 	return <div className={cn("px-6", className)}>{children}</div>;
 }
 
@@ -63,7 +69,7 @@ export function ToolInvocationName({
 	);
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: generic tool data structure
 export function ToolInvocationRawData({ data }: { data: any }) {
 	return (
 		<div className="pl-4 text-sm">

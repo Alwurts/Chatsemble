@@ -31,7 +31,7 @@ export function AgentSkeleton() {
 						<Skeleton className="h-5 w-16" />
 						<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 							{Array.from({ length: 4 }).map((_, i) => (
-								// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+								// biome-ignore lint/suspicious/noArrayIndexKey: static list for skeleton items
 								<Skeleton key={i} className="h-24 rounded-lg" />
 							))}
 						</div>

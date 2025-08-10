@@ -10,11 +10,11 @@ import {
 	ToolInvocationName,
 	ToolInvocationRawData,
 } from "@client/components/ui/tool-invocation";
-import type { ToolUIPart } from "ai";
+import type { AIToolUIPart } from "@shared/types/ai";
 import { useState } from "react";
 
 interface CollapsibleRawDataProps {
-	toolUse: ToolUIPart;
+	toolUse: AIToolUIPart;
 }
 
 export function CollapsibleRawData({ toolUse }: CollapsibleRawDataProps) {

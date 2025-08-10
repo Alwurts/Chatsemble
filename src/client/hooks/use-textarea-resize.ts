@@ -1,7 +1,7 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
 import type { ComponentProps } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 export function useTextareaResize(
 	value: ComponentProps<"textarea">["value"],
@@ -9,7 +9,7 @@ export function useTextareaResize(
 ) {
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// biome-ignore lint/correctness/useExhaustiveDependencies: value is stable dependency
 	useLayoutEffect(() => {
 		const textArea = textareaRef.current;
 

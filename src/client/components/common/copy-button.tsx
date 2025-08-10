@@ -4,7 +4,10 @@ import { useState } from "react";
 
 export const CopyButton = ({
 	textToCopy,
-}: { textToCopy: string; children?: React.ReactNode }) => {
+}: {
+	textToCopy: string;
+	children?: React.ReactNode;
+}) => {
 	const [copied, setCopied] = useState(false);
 
 	const handleCopy = async () => {

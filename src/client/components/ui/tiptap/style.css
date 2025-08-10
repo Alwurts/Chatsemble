@@ -123,8 +123,9 @@
 	margin-top: 1.5rem; /* my-6 */
 	margin-bottom: 1.5rem; /* my-6 */
 	padding: 0.75rem 1rem; /* py-3 px-4 */
-	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-		"Liberation Mono", "Courier New", monospace; /* Replaces font-mono */
+	font-family:
+		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+		"Courier New", monospace; /* Replaces font-mono */
 	overflow-x: auto; /* Add horizontal scroll */
 }
 

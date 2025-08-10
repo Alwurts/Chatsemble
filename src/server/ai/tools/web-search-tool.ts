@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers";
 import type { AgentToolAnnotation, ToolSource } from "@shared/types";
-import { type UIMessageStreamWriter, tool } from "ai";
+import { tool, type UIMessageStreamWriter } from "ai";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 

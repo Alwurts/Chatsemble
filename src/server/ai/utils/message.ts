@@ -1,5 +1,5 @@
 import type { ChatRoomMessage } from "@shared/types";
-import { type ModelMessage, type UIMessage, convertToModelMessages } from "ai";
+import { convertToModelMessages, type ModelMessage, type UIMessage } from "ai";
 
 function chatRoomMessageToUIMessage({
 	// TODO

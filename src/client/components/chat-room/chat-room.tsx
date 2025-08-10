@@ -18,34 +18,32 @@ export function ChatRoom() {
 	}
 
 	return (
-		<>
-			<ResizablePanelGroup direction="horizontal">
+		<ResizablePanelGroup direction="horizontal">
+			<ResizablePanel
+				id="main-panel"
+				order={1}
+				defaultSize={threadId ? 50 : 100}
+				minSize={35}
+			>
+				<div className="flex-1 flex flex-col h-full">
+					<ChatRoomMainHeader />
+					<ChatRoomMainDisplay />
+				</div>
+			</ResizablePanel>
+			{threadId && <ResizableHandle className="bg-transparent" />}
+			{threadId && (
 				<ResizablePanel
-					id="main-panel"
-					order={1}
-					defaultSize={threadId ? 50 : 100}
+					id="thread-panel"
+					order={2}
+					defaultSize={50}
 					minSize={35}
 				>
-					<div className="flex-1 flex flex-col h-full">
-						<ChatRoomMainHeader />
-						<ChatRoomMainDisplay />
+					<div className="flex-1 flex flex-col h-full border-border border-l rounded-l-xl shadow">
+						<ChatRoomThreadHeader />
+						<ChatRoomThreadDisplay />
 					</div>
 				</ResizablePanel>
-				{threadId && <ResizableHandle className="bg-transparent" />}
-				{threadId && (
-					<ResizablePanel
-						id="thread-panel"
-						order={2}
-						defaultSize={50}
-						minSize={35}
-					>
-						<div className="flex-1 flex flex-col h-full border-border border-l rounded-l-xl shadow">
-							<ChatRoomThreadHeader />
-							<ChatRoomThreadDisplay />
-						</div>
-					</ResizablePanel>
-				)}
-			</ResizablePanelGroup>
-		</>
+			)}
+		</ResizablePanelGroup>
 	);
 }

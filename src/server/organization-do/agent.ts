@@ -15,7 +15,7 @@ import type {
 	Document,
 	WorkflowPartial,
 } from "@shared/types";
-import type { AiUIMessage } from "@shared/types/ai";
+import type { AIUIMessage } from "@shared/types/ai";
 import type { ModelMessage } from "ai";
 import {
 	createUIMessageStream,
@@ -332,7 +332,7 @@ export class Agents {
 				},
 			});
 
-			for await (const uiMessage of readUIMessageStream<AiUIMessage>({
+			for await (const uiMessage of readUIMessageStream<AIUIMessage>({
 				stream,
 			})) {
 				console.log(
