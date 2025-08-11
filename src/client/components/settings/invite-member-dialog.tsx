@@ -70,6 +70,7 @@ export function InviteMemberDialog({
 		onSuccess: (data) => {
 			setOptimisticOrg({
 				...optimisticOrg,
+				// @ts-expect-error - role is not typed
 				invitations: [...(optimisticOrg?.invitations || []), data],
 			});
 		},
