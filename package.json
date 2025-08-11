@@ -61,7 +61,7 @@
 		"cron-parser": "^5.1.0",
 		"date-fns": "^4.1.0",
 		"dotenv": "^16.4.7",
-		"drizzle-orm": "^0.41.0",
+		"drizzle-orm": "^0.44.4",
 		"firecrawl": "^1.21.0",
 		"hono": "^4.7.5",
 		"lucide-react": "^0.485.0",
