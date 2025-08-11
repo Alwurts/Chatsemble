@@ -16,6 +16,7 @@ export function createChatRoomMessageService(db: DrizzleSqliteDODatabase) {
 		afterId?: number;
 		beforeId?: number;
 	}): Promise<ChatRoomMessage[]> {
+		console.log("getChatRoomMessages", options);
 		const query = db
 			.select({
 				id: chatMessage.id,
@@ -48,6 +49,8 @@ export function createChatRoomMessageService(db: DrizzleSqliteDODatabase) {
 			)
 			.orderBy(desc(chatMessage.id));
 
+		console.log("query");
+
 		const conditions = [eq(chatMessage.roomId, options.roomId)];
 
 		if (options.threadId === null) {
@@ -72,8 +75,16 @@ export function createChatRoomMessageService(db: DrizzleSqliteDODatabase) {
 			query.limit(options.limit);
 		}
 
-		const result = await query;
-		return result.reverse();
+		console.log("query after");
+
+		try {
+			const result = await query;
+			console.log("result", result);
+			return result.reverse();
+		} catch (error) {
+			console.error("error getting chat room messages", error);
+			throw error;
+		}
 	}
 
 	async function insertChatRoomMessage(
