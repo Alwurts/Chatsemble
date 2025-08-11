@@ -51,24 +51,23 @@ export class ChatRooms {
 			return;
 		}
 
-		const [room, members, messages, workflows, documents] = await Promise.all([
-			this.deps.dbServices.getChatRoomById(roomId),
-			this.deps.dbServices.getChatRoomMembers({ roomId }),
-			this.deps.dbServices.getChatRoomMessages({
-				roomId,
-				threadId: null,
-			}),
-			this.deps.dbServices.getChatRoomWorkflows(roomId),
-			this.deps.dbServices.getChatRoomDocuments(roomId),
-		]);
+		console.log("roomId", roomId);
 
-		console.log("data", {
-			room,
-			members,
-			messages,
-			workflows,
-			documents,
+		const room = await this.deps.dbServices.getChatRoomById(roomId);
+
+		console.log("room", room);
+
+		const members = await this.deps.dbServices.getChatRoomMembers({ roomId });
+		console.log("members", members);
+		const messages = await this.deps.dbServices.getChatRoomMessages({
+			roomId,
+			threadId: null,
 		});
+		console.log("messages", messages);
+		const workflows = await this.deps.dbServices.getChatRoomWorkflows(roomId);
+		console.log("workflows", workflows);
+		const documents = await this.deps.dbServices.getChatRoomDocuments(roomId);
+		console.log("documents", documents);
 
 		if (!room) {
 			console.error("Room not found");
