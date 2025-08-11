@@ -37,6 +37,8 @@ export class ChatRooms {
 			userId: session.userId,
 		});
 
+		console.log("isMember", isMember);
+
 		if (!isMember) {
 			console.warn(
 				`User ${session.userId} attempted to access room ${roomId} but is not a member.`,
@@ -60,6 +62,14 @@ export class ChatRooms {
 			this.deps.dbServices.getChatRoomDocuments(roomId),
 		]);
 
+		console.log("data", {
+			room,
+			members,
+			messages,
+			workflows,
+			documents,
+		});
+
 		if (!room) {
 			console.error("Room not found");
 			throw new Error("Room not found");
@@ -67,8 +77,12 @@ export class ChatRooms {
 
 		const newSession = { ...session, activeRoomId: roomId };
 
+		console.log("newSession", newSession);
+
 		webSocket.serializeAttachment(newSession);
 		this.deps.sessions.set(webSocket, newSession);
+
+		console.log("sent message");
 
 		this.deps.sendWebSocketMessageToUser(
 			{
