@@ -49,6 +49,7 @@ export function useMainChatRoomState({
 
 	const handleMessage = useCallback(
 		(wsMessage: WsChatOutgoingMessage) => {
+			console.log("wsMessage", wsMessage);
 			switch (wsMessage.type) {
 				case "chat-room-init-response":
 					if (wsMessage.roomId === roomId) {

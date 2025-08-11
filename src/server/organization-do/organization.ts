@@ -37,6 +37,7 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 		this.sessions = new Map();
 
 		this.ctx.blockConcurrencyWhile(async () => {
+			console.log("Migrating database");
 			await this.migrate();
 		});
 
