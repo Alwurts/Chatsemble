@@ -81,7 +81,13 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 	}
 
 	async migrate() {
-		migrate(this.db, migrations);
+		try {
+			console.log("migrating database in try block");
+			await migrate(this.db, migrations);
+			console.log("database migrated");
+		} catch (error) {
+			console.error("error migrating database", error);
+		}
 	}
 
 	async delete() {
