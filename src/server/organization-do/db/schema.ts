@@ -57,7 +57,10 @@ export const chatRoomMember = sqliteTable(
 
 export const chatMessage = sqliteTable("chat_message", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
-	status: text("status").$type<ChatMessageStatus>().notNull(),
+	status: text("status")
+		.$type<ChatMessageStatus>()
+		.notNull()
+		.default("completed"),
 	mentions: text("mentions", { mode: "json" }).$type<ChatMentions>().notNull(),
 	parts: text("parts", { mode: "json" })
 		.$type<ChatRoomMessagePartial["parts"]>() // TODO: Add versioning to columns that are json type

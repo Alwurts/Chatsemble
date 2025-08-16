@@ -1,27 +1,27 @@
 {
-  "version": "7",
-  "dialect": "sqlite",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "6",
-      "when": 1744954562124,
-      "tag": "0000_medical_zzzax",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1745296647140,
-      "tag": "0001_calm_karnak",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1755379268389,
-      "tag": "0002_omniscient_black_bird",
-      "breakpoints": true
-    }
-  ]
+	"version": "7",
+	"dialect": "sqlite",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "6",
+			"when": 1744954562124,
+			"tag": "0000_medical_zzzax",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "6",
+			"when": 1745296647140,
+			"tag": "0001_calm_karnak",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "6",
+			"when": 1755380811224,
+			"tag": "0002_black_natasha_romanoff",
+			"breakpoints": true
+		}
+	]
 }
