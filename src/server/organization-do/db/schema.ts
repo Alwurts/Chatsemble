@@ -61,7 +61,8 @@ export const chatMessage = sqliteTable("chat_message", {
 	mentions: text("mentions", { mode: "json" }).$type<ChatMentions>().notNull(),
 	parts: text("parts", { mode: "json" })
 		.$type<ChatRoomMessagePartial["parts"]>() // TODO: Add versioning to columns that are json type
-		.notNull(),
+		.notNull()
+		.default(sql`('[]')`),
 	memberId: text("member_id").notNull(),
 	createdAt: integer("created_at", { mode: "number" })
 		.notNull()
