@@ -33,7 +33,7 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 	constructor(ctx: DurableObjectState, env: Env) {
 		super(ctx, env);
 		this.storage = ctx.storage;
-		this.db = drizzle(this.storage, { logger: false });
+		this.db = drizzle(this.storage, { logger: true });
 		this.sessions = new Map();
 
 		this.ctx.blockConcurrencyWhile(async () => {
