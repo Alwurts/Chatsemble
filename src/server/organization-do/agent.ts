@@ -303,8 +303,6 @@ export class Agents {
 		systemPrompt: string;
 		removeTools?: string[];
 	}) => {
-		console.log("[formulateResponse] chatRoomId", chatRoomId);
-
 		let currentMessage: ChatRoomMessage | null = null;
 		let currentThreadId: number | null = originalThreadId;
 
@@ -335,10 +333,6 @@ export class Agents {
 			for await (const uiMessage of readUIMessageStream<AIUIMessage>({
 				stream,
 			})) {
-				console.log(
-					"[formulateResponse] uiMessage",
-					JSON.stringify(uiMessage, null, 2),
-				);
 				if (!currentMessage) {
 					const newMessagePartial = createChatRoomMessagePartial({
 						parts: [],

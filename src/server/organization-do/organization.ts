@@ -9,7 +9,7 @@ import type {
 } from "@shared/types";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { drizzle } from "drizzle-orm/durable-sqlite";
-import { migrate } from "drizzle-orm/durable-sqlite/migrator";
+import { migrate } from "../db/migrator";
 import { Agents } from "./agent";
 import { ChatRooms } from "./chat-room";
 import migrations from "./db/migrations/migrations";
