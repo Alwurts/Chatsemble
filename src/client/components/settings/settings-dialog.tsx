@@ -1,20 +1,11 @@
 "use client";
 
 import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@client/components/ui/breadcrumb";
-import {
 	Dialog,
 	DialogContent,
 	DialogDescription,
 	DialogTitle,
 } from "@client/components/ui/dialog";
-import { ScrollArea } from "@client/components/ui/scroll-area";
 import {
 	Sidebar,
 	SidebarContent,
@@ -25,43 +16,56 @@ import {
 	SidebarMenuItem,
 	SidebarProvider,
 } from "@client/components/ui/sidebar";
-import { Home, User } from "lucide-react";
+import { Home, Server, User } from "lucide-react";
 import type * as React from "react";
 import type { Dispatch, SetStateAction } from "react";
+import { MCPServerManagement } from "./mcp/mcp-server-management";
 import { OrganizationForm } from "./organization-form";
 import { ProfileForm } from "./profile-form";
 
-export type SettingIds = "profile" | "organization";
+export type SettingType = "profile" | "organization" | "mcp";
 
-const settingsLinks: Record<
-	SettingIds,
+export type SettingsPage =
+	| { type: "profile" }
+	| { type: "organization" }
+	| { type: "mcp"; view: "list" }
+	| { type: "mcp"; view: "create" }
+	| { type: "mcp"; view: "edit"; id: string };
+
+export const settingsLinks: Record<
+	SettingType,
 	{
-		id: SettingIds;
+		view: SettingType;
 		title: string;
 		icon: React.ElementType;
 	}
 > = {
-	profile: { id: "profile", title: "Profile", icon: User },
-	organization: { id: "organization", title: "Organization", icon: Home },
+	profile: { view: "profile", title: "Profile", icon: User },
+	organization: { view: "organization", title: "Organization", icon: Home },
+	mcp: { view: "mcp", title: "MCP Servers", icon: Server },
 };
 
 export function SettingsDialog({
-	openedSettingsId,
-	setOpenedSettingsId,
+	openedSettings,
+	setOpenedSettings,
 }: {
-	openedSettingsId: SettingIds | null;
-	setOpenedSettingsId: Dispatch<SetStateAction<SettingIds | null>>;
+	openedSettings: SettingsPage | null;
+	setOpenedSettings: Dispatch<SetStateAction<SettingsPage | null>>;
 }) {
 	return (
 		<Dialog
-			open={openedSettingsId !== null}
-			onOpenChange={() => setOpenedSettingsId(null)}
+			open={openedSettings !== null}
+			onOpenChange={(isOpen) => {
+				if (!isOpen) {
+					setOpenedSettings(null);
+				}
+			}}
 		>
-			<DialogContent className="overflow-hidden p-0 md:max-h-[500px] md:max-w-[700px] lg:max-w-[800px]">
-				{openedSettingsId && (
+			<DialogContent className="max-w-[94vw] max-h-[95vh] rounded-lg sm:max-w-3xl 2xl:max-w-4xl h-full sm:max-h-[70vh] flex flex-col p-0">
+				{openedSettings && (
 					<SettingsContent
-						openedSettingsId={openedSettingsId}
-						setOpenedSettingsId={setOpenedSettingsId}
+						openedSettings={openedSettings}
+						setOpenedSettings={setOpenedSettings}
 					/>
 				)}
 			</DialogContent>
@@ -70,11 +74,11 @@ export function SettingsDialog({
 }
 
 function SettingsContent({
-	openedSettingsId,
-	setOpenedSettingsId,
+	openedSettings,
+	setOpenedSettings,
 }: {
-	openedSettingsId: SettingIds;
-	setOpenedSettingsId: Dispatch<SetStateAction<SettingIds | null>>;
+	openedSettings: SettingsPage;
+	setOpenedSettings: Dispatch<SetStateAction<SettingsPage | null>>;
 }) {
 	return (
 		<>
@@ -82,43 +86,59 @@ function SettingsContent({
 			<DialogDescription className="sr-only">
 				Customize your settings here.
 			</DialogDescription>
-			<SidebarProvider className="items-start">
-				<SettingsSidebar
-					openedSettingsId={openedSettingsId}
-					setOpenedSettingsId={setOpenedSettingsId}
-				/>
-				<main className="flex h-[480px] flex-1 flex-col overflow-hidden">
-					<SettingsHeader openedSettingsId={openedSettingsId} />
-					<ScrollArea className="flex flex-1 flex-col overflow-y-auto">
-						<div className="flex flex-col gap-4">
-							{openedSettingsId === "profile" && <ProfileForm />}
-							{openedSettingsId === "organization" && <OrganizationForm />}
-						</div>
-					</ScrollArea>
-				</main>
-			</SidebarProvider>
+			<div className="flex-1 overflow-y-auto rounded-lg">
+				<SidebarProvider className="min-h-0 h-full">
+					<SettingsSidebar
+						openedSettings={openedSettings}
+						setOpenedSettings={setOpenedSettings}
+					/>
+					<div className="flex-1">
+						{openedSettings.type === "profile" && (
+							<ProfileForm openedSettings={openedSettings} />
+						)}
+						{openedSettings.type === "organization" && (
+							<OrganizationForm openedSettings={openedSettings} />
+						)}
+
+						{openedSettings.type === "mcp" && (
+							<MCPServerManagement
+								openedSettings={openedSettings}
+								setOpenedSettings={setOpenedSettings}
+							/>
+						)}
+					</div>
+				</SidebarProvider>
+			</div>
 		</>
 	);
 }
 
 function SettingsSidebar({
-	openedSettingsId,
-	setOpenedSettingsId,
+	openedSettings,
+	setOpenedSettings,
 }: {
-	openedSettingsId: SettingIds;
-	setOpenedSettingsId: Dispatch<SetStateAction<SettingIds | null>>;
+	openedSettings: SettingsPage;
+	setOpenedSettings: Dispatch<SetStateAction<SettingsPage | null>>;
 }) {
 	return (
-		<Sidebar collapsible="none" className="hidden md:flex border-r">
+		<Sidebar collapsible="none" className="hidden md:flex border-r w-48">
 			<SidebarContent>
 				<SidebarGroup>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{Object.entries(settingsLinks).map(([id, item]) => (
-								<SidebarMenuItem key={id}>
+							{Object.values(settingsLinks).map((item) => (
+								<SidebarMenuItem key={item.view}>
 									<SidebarMenuButton
-										isActive={id === openedSettingsId}
-										onClick={() => setOpenedSettingsId(item.id)}
+										isActive={openedSettings.type === item.view}
+										onClick={() => {
+											if (item.view === "mcp") {
+												setOpenedSettings({ type: "mcp", view: "list" });
+											} else {
+												setOpenedSettings({
+													type: item.view as "profile" | "organization",
+												});
+											}
+										}}
 									>
 										<item.icon />
 										<span>{item.title}</span>
@@ -130,31 +150,5 @@ function SettingsSidebar({
 				</SidebarGroup>
 			</SidebarContent>
 		</Sidebar>
-	);
-}
-
-function SettingsHeader({
-	openedSettingsId,
-}: {
-	openedSettingsId: SettingIds;
-}) {
-	return (
-		<header className="flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-			<div className="flex items-center gap-2 px-4">
-				<Breadcrumb>
-					<BreadcrumbList>
-						<BreadcrumbItem className="hidden md:block">
-							<BreadcrumbLink href="#">Settings</BreadcrumbLink>
-						</BreadcrumbItem>
-						<BreadcrumbSeparator className="hidden md:block" />
-						<BreadcrumbItem>
-							<BreadcrumbPage>
-								{settingsLinks[openedSettingsId].title}
-							</BreadcrumbPage>
-						</BreadcrumbItem>
-					</BreadcrumbList>
-				</Breadcrumb>
-			</div>
-		</header>
 	);
 }

@@ -105,3 +105,5 @@ We welcome contributions! Check out the open issues on GitHub to find areas wher
 ## 📄 License
 
 Chatsemble is released under the [GNU General Public License v3.0](LICENSE).
+
+TODO: Centralize query hooks and query keys

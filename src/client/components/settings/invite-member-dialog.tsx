@@ -30,7 +30,7 @@ import {
 import { authClient } from "@client/lib/auth-client";
 import type { ActiveOrganization } from "@client/types/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MailPlus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -48,6 +48,8 @@ export function InviteMemberDialog({
 	setOptimisticOrg: (org: ActiveOrganization | null) => void;
 	optimisticOrg: ActiveOrganization;
 }) {
+	const queryClient = useQueryClient();
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -61,6 +63,7 @@ export function InviteMemberDialog({
 			const { data } = await authClient.organization.inviteMember({
 				email: values.email,
 				role: values.role as "member" | "admin" | "owner",
+				organizationId: optimisticOrg.id,
 			});
 			if (!data) {
 				throw new Error("Failed to invite member");
@@ -73,6 +76,7 @@ export function InviteMemberDialog({
 				// @ts-expect-error - role is not typed
 				invitations: [...(optimisticOrg?.invitations || []), data],
 			});
+			queryClient.invalidateQueries({ queryKey: ["activeOrganization"] });
 		},
 		onError: (error) => {
 			toast.error(error.message || "Failed to invite member");

@@ -4,6 +4,7 @@ import { createChatRoomService } from "./chat-room";
 import { createChatRoomMemberService } from "./chat-room-members";
 import { createChatRoomMessageService } from "./chat-room-message";
 import { createDocumentService } from "./document";
+import { createMCPServerService } from "./mcp-server";
 import { createWorkflowService } from "./workflow";
 
 export function createChatRoomDbServices(db: DrizzleSqliteDODatabase) {
@@ -13,6 +14,7 @@ export function createChatRoomDbServices(db: DrizzleSqliteDODatabase) {
 	const agentsService = createAgentsService(db);
 	const workflowService = createWorkflowService(db);
 	const documentService = createDocumentService(db);
+	const mcpServerService = createMCPServerService(db);
 
 	return {
 		...chatRoomService,
@@ -21,6 +23,7 @@ export function createChatRoomDbServices(db: DrizzleSqliteDODatabase) {
 		...agentsService,
 		...workflowService,
 		...documentService,
+		...mcpServerService,
 	};
 }
 

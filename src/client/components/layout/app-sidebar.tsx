@@ -3,7 +3,7 @@
 import { ThemeToggle } from "@client/components/common/theme-toggle";
 import { LogoIcon } from "@client/components/icons/logo-icon";
 import { AppNavUser } from "@client/components/layout/app-nav-user";
-import type { SettingIds } from "@client/components/settings/settings-dialog";
+import type { SettingsPage } from "@client/components/settings/settings-dialog";
 import { SettingsDialog } from "@client/components/settings/settings-dialog";
 import {
 	Sidebar,
@@ -127,14 +127,15 @@ function NavSecondary({
 }: { currentPath: string } & React.ComponentPropsWithoutRef<
 	typeof SidebarGroup
 >) {
-	const [openedSettingsId, setOpenedSettingsId] = useState<SettingIds | null>(
+	const [openedSettings, setOpenedSettings] = useState<SettingsPage | null>(
 		null,
 	);
+
 	return (
 		<>
 			<SettingsDialog
-				openedSettingsId={openedSettingsId}
-				setOpenedSettingsId={setOpenedSettingsId}
+				openedSettings={openedSettings}
+				setOpenedSettings={setOpenedSettings}
 			/>
 			<SidebarGroup {...props}>
 				<SidebarGroupContent>
@@ -143,8 +144,8 @@ function NavSecondary({
 							<SidebarMenuButton
 								size="sm"
 								tooltip="Settings"
-								isActive={!!openedSettingsId}
-								onClick={() => setOpenedSettingsId("profile")}
+								isActive={!!openedSettings}
+								onClick={() => setOpenedSettings({ type: "profile" })}
 							>
 								<Settings />
 								<span>Settings</span>

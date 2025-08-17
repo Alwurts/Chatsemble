@@ -5,6 +5,7 @@ import {
 import agentRoutes from "@server/routes/protected/agents";
 import chatRoomRoutes from "@server/routes/protected/chat";
 import documentRoutes from "@server/routes/protected/documents";
+import mcpRoutes from "@server/routes/protected/mcp";
 import organizationUserRoutes from "@server/routes/protected/organization-user";
 import workflowRoutes from "@server/routes/protected/workflows";
 import type { HonoContext } from "@server/types/hono";
@@ -17,6 +18,7 @@ const app = new Hono<HonoContext>()
 	.route("/organization", organizationUserRoutes)
 	.route("/agents", agentRoutes)
 	.route("/workflows", workflowRoutes)
-	.route("/documents", documentRoutes);
+	.route("/documents", documentRoutes)
+	.route("/mcp", mcpRoutes);
 
 export default app;

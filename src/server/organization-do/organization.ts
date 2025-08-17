@@ -9,7 +9,7 @@ import type {
 } from "@shared/types";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { drizzle } from "drizzle-orm/durable-sqlite";
-import { migrate } from "../db/migrator";
+import { migrate } from "drizzle-orm/durable-sqlite/migrator";
 import { Agents } from "./agent";
 import { ChatRooms } from "./chat-room";
 import migrations from "./db/migrations/migrations";
@@ -18,6 +18,7 @@ import {
 	createChatRoomDbServices,
 } from "./db/services";
 import { Documents } from "./document";
+import { MCPServers } from "./mcp-server";
 import { Workflows } from "./workflow";
 
 export class OrganizationDurableObject extends DurableObject<Env> {
@@ -29,6 +30,7 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 	workflows: Workflows;
 	chatRooms: ChatRooms;
 	documents: Documents;
+	mcpServers: MCPServers;
 
 	constructor(ctx: DurableObjectState, env: Env) {
 		super(ctx, env);
@@ -69,6 +71,10 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 		this.documents = new Documents({
 			dbServices: this.dbServices,
 			broadcastWebSocketMessageToRoom: this.broadcastWebSocketMessageToRoom,
+		});
+
+		this.mcpServers = new MCPServers({
+			dbServices: this.dbServices,
 		});
 
 		for (const webSocket of ctx.getWebSockets()) {
@@ -301,7 +307,7 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 	};
 
 	private routeMessagesToRelevantAgents = async (message: ChatRoomMessage) => {
-		return this.agents.routeMessagesToRelevantAgents(message);
+		return this.agents.routeMessageToRelevantAgents(message);
 	};
 
 	private createWorkflow = async (
@@ -371,5 +377,26 @@ export class OrganizationDurableObject extends DurableObject<Env> {
 
 	async deleteDocument(documentId: string) {
 		return await this.documents.deleteDocument(documentId);
+	}
+
+	async getMcpServers() {
+		return await this.mcpServers.getMcpServers();
+	}
+
+	async createMcpServer(
+		data: Parameters<typeof this.mcpServers.createMcpServer>[0],
+	) {
+		return await this.mcpServers.createMcpServer(data);
+	}
+
+	async updateMcpServer(
+		id: string,
+		data: Parameters<typeof this.mcpServers.updateMcpServer>[1],
+	) {
+		return await this.mcpServers.updateMcpServer(id, data);
+	}
+
+	async deleteMcpServer(id: string) {
+		return await this.mcpServers.deleteMcpServer(id);
 	}
 }

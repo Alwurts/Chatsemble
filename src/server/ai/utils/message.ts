@@ -81,11 +81,11 @@ function chatRoomMessageToUIMessage({
 
 export function contextAndNewchatRoomMessagesToModelMessages({
 	contextMessages,
-	newMessages,
+	newMessage,
 	agentIdForAssistant,
 }: {
 	contextMessages: ChatRoomMessage[];
-	newMessages: ChatRoomMessage[];
+	newMessage: ChatRoomMessage;
 	agentIdForAssistant?: string;
 }): ModelMessage[] {
 	const contextAIMessages: ModelMessage[] = convertToModelMessages(
@@ -97,15 +97,13 @@ export function contextAndNewchatRoomMessagesToModelMessages({
 			}),
 		),
 	);
-	const newAIMessages: ModelMessage[] = convertToModelMessages(
-		newMessages.map((msg) =>
-			chatRoomMessageToUIMessage({
-				message: msg,
-				isNew: true,
-				agentIdForAssistant,
-			}),
-		),
-	);
+	const [newAIMessages]: ModelMessage[] = convertToModelMessages([
+		chatRoomMessageToUIMessage({
+			message: newMessage,
+			isNew: true,
+			agentIdForAssistant,
+		}),
+	]);
 
-	return [...contextAIMessages, ...newAIMessages];
+	return [...contextAIMessages, newAIMessages];
 }

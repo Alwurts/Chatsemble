@@ -91,7 +91,7 @@ export class Agents {
 		});
 	};
 
-	routeMessagesToRelevantAgents = async (
+	routeMessageToRelevantAgents = async (
 		newMessage: ChatRoomMessage,
 	): Promise<void> => {
 		try {
@@ -112,10 +112,11 @@ export class Agents {
 			});
 
 			if (threadId) {
-				const threadMessage =
+				// We put the thread parent message at the beginning of the context messages
+				const threadParentMessage =
 					await this.deps.dbServices.getChatRoomMessageById(threadId);
-				if (threadMessage) {
-					contextMessages = [threadMessage, ...contextMessages];
+				if (threadParentMessage) {
+					contextMessages = [threadParentMessage, ...contextMessages];
 				}
 			}
 
@@ -136,60 +137,56 @@ export class Agents {
 				throw new Error("Room config not found");
 			}
 
-			const targetAgentIds = await this.determineRelevantAgentsForMessage({
+			const targetAgentId = await this.determineRelevantAgentForMessage({
 				contextMessages,
-				newMessages: [newMessage],
+				newMessage,
 				agents: agentMembers,
 				room: roomConfig,
 			});
 
-			if (targetAgentIds.length === 0) {
+			if (!targetAgentId) {
 				console.log(
 					"[routeMessageAndNotifyAgents] Router decided no agent should respond.",
 				);
 				return;
 			}
 
-			for (const agentId of targetAgentIds) {
-				console.log(`[routeMessageAndNotifyAgents] Notifying agent ${agentId}`);
-
-				await this.initiateAgentResponseToMessages({
-					agentId,
-					chatRoomId: roomId,
-					threadId,
-					newMessages: [newMessage],
-					contextMessages,
-				});
-			}
+			await this.initiateAgentResponseToMessages({
+				agentId: targetAgentId,
+				chatRoomId: roomId,
+				threadId,
+				newMessage,
+				contextMessages,
+			});
 		} catch (error) {
 			console.error("Error routing message to agents:", error);
 		}
 	};
 
-	private determineRelevantAgentsForMessage = async ({
+	private determineRelevantAgentForMessage = async ({
 		contextMessages,
-		newMessages,
+		newMessage,
 		agents,
 		room,
 	}: {
 		contextMessages: ChatRoomMessage[];
-		newMessages: ChatRoomMessage[];
+		newMessage: ChatRoomMessage;
 		agents: ChatRoomMember[];
 		room: ChatRoom;
-	}) => {
+	}): Promise<string | null> => {
 		console.log(
 			"[routeMessageToAgents] Deciding which agent(s) should respond.",
 		);
 		if (agents.length === 0) {
-			return [];
+			return null;
 		}
 
+		const threadId = newMessage.threadId;
+
 		const mentionedAgentIds = new Set<string>();
-		for (const msg of newMessages) {
-			for (const mention of msg.mentions) {
-				if (agents.some((agent) => agent.id === mention.id)) {
-					mentionedAgentIds.add(mention.id);
-				}
+		for (const mention of newMessage.mentions) {
+			if (agents.some((agent) => agent.id === mention.id)) {
+				mentionedAgentIds.add(mention.id);
 			}
 		}
 
@@ -199,7 +196,21 @@ export class Agents {
 				"[routeMessageToAgents] Routing based on mentions:",
 				mentionedIdsArray,
 			);
-			return mentionedIdsArray;
+			return mentionedIdsArray[0];
+		}
+
+		// Check if there's already an AI agent in the conversation history
+		// and no explicit mentions - default to that agent
+		if (contextMessages.length > 0 && threadId) {
+			// Find the most recent assistant message to get the agent that was responding
+			const lastAssistantMessage = contextMessages
+				.slice()
+				.reverse()
+				.find((msg) => msg.member.type === "agent");
+
+			if (lastAssistantMessage?.member.id) {
+				return lastAssistantMessage.member.id;
+			}
 		}
 
 		const openAIClient = createOpenAI({
@@ -214,30 +225,27 @@ export class Agents {
 
 			const aiMessages = contextAndNewchatRoomMessagesToModelMessages({
 				contextMessages,
-				newMessages,
+				newMessage,
 			});
 
 			const { object: targetAgents } = await generateObject({
 				system: routeMessageToAgentSystemPrompt({ agents: agentList, room }),
 				schema: z.object({
-					agentIds: z
-						.array(z.string())
+					agentId: z
+						.string()
 						.describe(
-							`List of agent IDs that should respond to the messages. Include ID only if agent is relevant. Max ${agents.length} agents. Possible IDs: ${agents.map((a) => a.id).join(", ")}.`,
+							`Agent IDs that should respond to the message. Possible IDs: ${agents.map((a) => a.id).join(", ")}.`,
 						),
 				}),
 				messages: aiMessages,
-				model: openAIClient("gpt-4o-mini"),
+				model: openAIClient("gpt-4.1-mini"),
 			});
 
-			const validAgentIds = (targetAgents.agentIds || []).filter((id) =>
-				agents.some((a) => a.id === id),
-			);
-			console.log("[routeMessageToAgents] AI decided:", validAgentIds);
-			return validAgentIds;
+			console.log("[routeMessageToAgents] AI decided:", targetAgents.agentId);
+			return targetAgents.agentId;
 		} catch (error) {
 			console.error("Error in AI routing:", error);
-			return [];
+			return null;
 		}
 	};
 
@@ -245,16 +253,16 @@ export class Agents {
 		agentId,
 		chatRoomId,
 		threadId,
-		newMessages,
+		newMessage,
 		contextMessages,
 	}: {
 		agentId: string;
 		chatRoomId: string;
 		threadId: number | null;
-		newMessages: ChatRoomMessage[];
+		newMessage: ChatRoomMessage;
 		contextMessages: ChatRoomMessage[];
 	}) => {
-		if (newMessages.length === 0) {
+		if (!newMessage) {
 			return;
 		}
 
@@ -267,7 +275,7 @@ export class Agents {
 
 		const messages = contextAndNewchatRoomMessagesToModelMessages({
 			contextMessages,
-			newMessages,
+			newMessage,
 			agentIdForAssistant: agentId,
 		});
 
