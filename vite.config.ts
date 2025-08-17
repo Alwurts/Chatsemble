@@ -1,14 +1,23 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import { cloudflare } from "@cloudflare/vite-plugin";
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
-import tailwindcss from "@tailwindcss/vite";
 import path from "node:path";
-import rawPlugin from "vite-raw-plugin";
+import { cloudflare } from "@cloudflare/vite-plugin";
+import tailwindcss from "@tailwindcss/vite";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+import rawPlugin from "vite-raw-plugin";
 
 // https://vite.dev/config/
 export default defineConfig({
+	environments: {
+		chatsemble: {
+			build: {
+				rollupOptions: {
+					preserveEntrySignatures: "strict",
+				},
+			},
+		},
+	},
 	plugins: [
 		TanStackRouterVite({
 			target: "react",
@@ -90,6 +99,7 @@ export default defineConfig({
 			},
 		}),
 	],
+
 	resolve: {
 		alias: {
 			"@client": path.resolve(__dirname, "./src/client"),
