@@ -11,6 +11,7 @@
 		"preview": "vite preview",
 		"deploy": "wrangler deploy",
 		"cf-types": "wrangler types",
+		"reset": "rm -rf .wrangler && npm run db:migrate:dev && npm run db:seed:dev",
 		"db:generate": "drizzle-kit generate",
 		"db:generate:organization": "DRIZZLE_SCHEMA=./src/server/organization-do/db/schema.ts DRIZZLE_OUT=./src/server/organization-do/db/migrations drizzle-kit generate --config=drizzle.do.config.ts",
 		"db:migrate:dev": "wrangler d1 migrations apply chatsemble-db --local",
