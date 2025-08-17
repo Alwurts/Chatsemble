@@ -101,6 +101,7 @@
 		"tsx": "^4.19.3",
 		"typescript": "~5.7.2",
 		"vite": "^6.2.0",
+		"vite-plugin-pwa": "^1.0.2",
 		"vite-raw-plugin": "^1.0.2",
 		"wrangler": "^4.30.0"
 	}

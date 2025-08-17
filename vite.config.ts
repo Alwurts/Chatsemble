@@ -5,6 +5,7 @@ import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
 import path from "node:path";
 import rawPlugin from "vite-raw-plugin";
+import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -20,6 +21,73 @@ export default defineConfig({
 		tailwindcss(),
 		rawPlugin({
 			fileRegex: /\.sql$/,
+		}),
+		VitePWA({
+			registerType: "autoUpdate",
+			workbox: {
+				globPatterns: ["**/*.{js,css,html,ico,png,svg,webp}"],
+				runtimeCaching: [
+					{
+						urlPattern: /^https:\/\/api\./i,
+						handler: "NetworkFirst",
+						options: {
+							cacheName: "api-cache",
+							networkTimeoutSeconds: 10,
+							cacheableResponse: {
+								statuses: [0, 200],
+							},
+						},
+					},
+				],
+			},
+			includeAssets: [
+				"favicon-32x32.png",
+				"favicon-16x16.png",
+				"apple-touch-icon.png",
+				"browserconfig.xml",
+				"pwa-512x512-maskable.png",
+			],
+			manifest: {
+				name: "Chatsemble",
+				short_name: "Chatsemble",
+				description: "AI-powered chat application with collaborative features",
+				theme_color: "#000000",
+				background_color: "#ffffff",
+				display: "standalone",
+				orientation: "portrait-primary",
+				scope: "/",
+				start_url: "/",
+				icons: [
+					{
+						src: "pwa-192x192.png",
+						sizes: "192x192",
+						type: "image/png",
+						purpose: "any",
+					},
+					{
+						src: "pwa-512x512.png",
+						sizes: "512x512",
+						type: "image/png",
+						purpose: "any",
+					},
+					{
+						src: "pwa-512x512-maskable.png",
+						sizes: "512x512",
+						type: "image/png",
+						purpose: "maskable",
+					},
+				],
+				categories: ["productivity", "social", "utilities"],
+				shortcuts: [
+					{
+						name: "New Chat",
+						short_name: "New Chat",
+						description: "Start a new chat conversation",
+						url: "/chat",
+						icons: [{ src: "pwa-192x192.png", sizes: "192x192" }],
+					},
+				],
+			},
 		}),
 	],
 	resolve: {
