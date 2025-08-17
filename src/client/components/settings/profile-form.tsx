@@ -31,7 +31,7 @@ const profileFormSchema = z.object({
 		.max(30, {
 			message: "Username must not be longer than 30 characters.",
 		}),
-	email: z.email({
+	email: z.string().email({
 		message: "Please enter a valid email address.",
 	}),
 	avatar: z.string().optional(),

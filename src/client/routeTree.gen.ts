@@ -8,117 +8,43 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as appRouteRouteImport } from './routes/(app)/route'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthSignupRouteImport } from './routes/auth/signup'
+import { Route as AuthSigninRouteImport } from './routes/auth/signin'
+import { Route as appChatRouteImport } from './routes/(app)/chat'
+import { Route as appAgentsRouteImport } from './routes/(app)/agents'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as appRouteImport } from './routes/(app)/route'
-import { Route as IndexImport } from './routes/index'
-import { Route as AuthSignupImport } from './routes/auth/signup'
-import { Route as AuthSigninImport } from './routes/auth/signin'
-import { Route as appChatImport } from './routes/(app)/chat'
-import { Route as appAgentsImport } from './routes/(app)/agents'
-
-// Create/Update Routes
-
-const appRouteRoute = appRouteImport.update({
+const appRouteRoute = appRouteRouteImport.update({
   id: '/(app)',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AuthSignupRoute = AuthSignupImport.update({
+const AuthSignupRoute = AuthSignupRouteImport.update({
   id: '/auth/signup',
   path: '/auth/signup',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AuthSigninRoute = AuthSigninImport.update({
+const AuthSigninRoute = AuthSigninRouteImport.update({
   id: '/auth/signin',
   path: '/auth/signin',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const appChatRoute = appChatImport.update({
+const appChatRoute = appChatRouteImport.update({
   id: '/chat',
   path: '/chat',
   getParentRoute: () => appRouteRoute,
 } as any)
-
-const appAgentsRoute = appAgentsImport.update({
+const appAgentsRoute = appAgentsRouteImport.update({
   id: '/agents',
   path: '/agents',
   getParentRoute: () => appRouteRoute,
 } as any)
-
-// Populate the FileRoutesByPath interface
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/(app)': {
-      id: '/(app)'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof appRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/(app)/agents': {
-      id: '/(app)/agents'
-      path: '/agents'
-      fullPath: '/agents'
-      preLoaderRoute: typeof appAgentsImport
-      parentRoute: typeof appRouteImport
-    }
-    '/(app)/chat': {
-      id: '/(app)/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof appChatImport
-      parentRoute: typeof appRouteImport
-    }
-    '/auth/signin': {
-      id: '/auth/signin'
-      path: '/auth/signin'
-      fullPath: '/auth/signin'
-      preLoaderRoute: typeof AuthSigninImport
-      parentRoute: typeof rootRoute
-    }
-    '/auth/signup': {
-      id: '/auth/signup'
-      path: '/auth/signup'
-      fullPath: '/auth/signup'
-      preLoaderRoute: typeof AuthSignupImport
-      parentRoute: typeof rootRoute
-    }
-  }
-}
-
-// Create and export the route tree
-
-interface appRouteRouteChildren {
-  appAgentsRoute: typeof appAgentsRoute
-  appChatRoute: typeof appChatRoute
-}
-
-const appRouteRouteChildren: appRouteRouteChildren = {
-  appAgentsRoute: appAgentsRoute,
-  appChatRoute: appChatRoute,
-}
-
-const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
-  appRouteRouteChildren,
-)
 
 export interface FileRoutesByFullPath {
   '/': typeof appRouteRouteWithChildren
@@ -127,7 +53,6 @@ export interface FileRoutesByFullPath {
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
 }
-
 export interface FileRoutesByTo {
   '/': typeof appRouteRouteWithChildren
   '/agents': typeof appAgentsRoute
@@ -135,9 +60,8 @@ export interface FileRoutesByTo {
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
 }
-
 export interface FileRoutesById {
-  __root__: typeof rootRoute
+  __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/(app)': typeof appRouteRouteWithChildren
   '/(app)/agents': typeof appAgentsRoute
@@ -145,7 +69,6 @@ export interface FileRoutesById {
   '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
 }
-
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/agents' | '/chat' | '/auth/signin' | '/auth/signup'
@@ -161,7 +84,6 @@ export interface FileRouteTypes {
     | '/auth/signup'
   fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   appRouteRoute: typeof appRouteRouteWithChildren
@@ -169,53 +91,73 @@ export interface RootRouteChildren {
   AuthSignupRoute: typeof AuthSignupRoute
 }
 
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/(app)': {
+      id: '/(app)'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof appRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/signin': {
+      id: '/auth/signin'
+      path: '/auth/signin'
+      fullPath: '/auth/signin'
+      preLoaderRoute: typeof AuthSigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app)/chat': {
+      id: '/(app)/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof appChatRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/agents': {
+      id: '/(app)/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof appAgentsRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+  }
+}
+
+interface appRouteRouteChildren {
+  appAgentsRoute: typeof appAgentsRoute
+  appChatRoute: typeof appChatRoute
+}
+
+const appRouteRouteChildren: appRouteRouteChildren = {
+  appAgentsRoute: appAgentsRoute,
+  appChatRoute: appChatRoute,
+}
+
+const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
+  appRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   appRouteRoute: appRouteRouteWithChildren,
   AuthSigninRoute: AuthSigninRoute,
   AuthSignupRoute: AuthSignupRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/(app)",
-        "/auth/signin",
-        "/auth/signup"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/(app)": {
-      "filePath": "(app)/route.tsx",
-      "children": [
-        "/(app)/agents",
-        "/(app)/chat"
-      ]
-    },
-    "/(app)/agents": {
-      "filePath": "(app)/agents.tsx",
-      "parent": "/(app)"
-    },
-    "/(app)/chat": {
-      "filePath": "(app)/chat.tsx",
-      "parent": "/(app)"
-    },
-    "/auth/signin": {
-      "filePath": "auth/signin.tsx"
-    },
-    "/auth/signup": {
-      "filePath": "auth/signup.tsx"
-    }
-  }
-}
-ROUTE_MANIFEST_END */
