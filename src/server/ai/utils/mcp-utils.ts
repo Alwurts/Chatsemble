@@ -3,9 +3,29 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import type {
 	AgentMCPSelection,
 	AppMCPServer,
+	DefaultMCPServer,
 	MCPClient,
-} from "@shared/types/mcp";
+} from "@shared/types";
 import { experimental_createMCPClient as createMCPClient, type Tool } from "ai";
+
+export const defaultMcpServers: DefaultMCPServer[] = [
+	{
+		id: "default-github",
+		name: "GitHub Tools",
+		description: "GitHub repository management and search tools",
+		url: "https://github-mcp.example.com",
+		transport: "streamable-http",
+		type: "default",
+	},
+	{
+		id: "default-web-search",
+		name: "Web Search",
+		description: "Search the web for information",
+		url: "https://search-mcp.example.com",
+		transport: "sse",
+		type: "default",
+	},
+];
 
 export async function initializeMCPClients({
 	mcpServers,

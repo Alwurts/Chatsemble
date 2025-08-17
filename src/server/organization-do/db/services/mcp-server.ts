@@ -1,4 +1,4 @@
-import type { DBMCPServer } from "@shared/types/mcp";
+import type { BaseMCPServer } from "@shared/types/mcp";
 import { eq } from "drizzle-orm";
 import type { DrizzleSqliteDODatabase } from "drizzle-orm/durable-sqlite";
 import { mcpServer } from "../schema";
@@ -7,7 +7,7 @@ export function createMCPServerService(db: DrizzleSqliteDODatabase) {
 	return {
 		async createMCPServer(
 			newMCPServerData: typeof mcpServer.$inferInsert,
-		): Promise<DBMCPServer> {
+		): Promise<BaseMCPServer> {
 			const newMCPServer = await db
 				.insert(mcpServer)
 				.values(newMCPServerData)

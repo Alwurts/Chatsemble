@@ -1,14 +1,16 @@
 import { zValidator } from "@hono/zod-validator";
-import { fetchMCPServerTools } from "@server/ai/utils/mcp-utils";
-import { defaultMcpServers } from "@server/organization-do/mcp-server";
+import {
+	defaultMcpServers,
+	fetchMCPServerTools,
+} from "@server/ai/utils/mcp-utils";
 import type { HonoContextWithAuth } from "@server/types/hono";
 import {
 	type AppMCPServer,
 	createMcpServerSchema,
 	type MCPTransport,
-} from "@shared/types/mcp";
+} from "@shared/types";
 import { Hono } from "hono";
-import { z } from "zod";
+import z from "zod";
 
 const mcpRouter = new Hono<HonoContextWithAuth>()
 	// GET all servers (custom + default)
@@ -33,7 +35,6 @@ const mcpRouter = new Hono<HonoContextWithAuth>()
 
 		return c.json(allServers);
 	})
-	// POST to create a new custom server
 	.post("/servers", zValidator("json", createMcpServerSchema), async (c) => {
 		const { ORGANIZATION_DURABLE_OBJECT } = c.env;
 		const { activeOrganizationId } = c.get("session");
@@ -49,7 +50,6 @@ const mcpRouter = new Hono<HonoContextWithAuth>()
 		});
 		return c.json(newServer, 201);
 	})
-	// PUT to update a server
 	.put("/servers/:id", zValidator("json", createMcpServerSchema), async (c) => {
 		const { ORGANIZATION_DURABLE_OBJECT } = c.env;
 		const { activeOrganizationId } = c.get("session");
@@ -66,7 +66,6 @@ const mcpRouter = new Hono<HonoContextWithAuth>()
 		});
 		return c.json(updatedServer);
 	})
-	// DELETE a server
 	.delete("/servers/:id", async (c) => {
 		const { ORGANIZATION_DURABLE_OBJECT } = c.env;
 		const { activeOrganizationId } = c.get("session");
@@ -79,7 +78,6 @@ const mcpRouter = new Hono<HonoContextWithAuth>()
 		await organizationDo.deleteMcpServer(id);
 		return c.json({ success: true });
 	})
-	// POST to test a server's connection
 	.post("/servers/:id/test", async (c) => {
 		const { ORGANIZATION_DURABLE_OBJECT } = c.env;
 		const { id } = c.req.param();
@@ -119,9 +117,8 @@ const mcpRouter = new Hono<HonoContextWithAuth>()
 			});
 		}
 	})
-	// GET tools from a specific server
 	.get(
-		"/:serverId/tools",
+		"/servers/:serverId/tools",
 		zValidator(
 			"param",
 			z.object({

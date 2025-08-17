@@ -1,14 +1,13 @@
-import type { mcpServer } from "@server/organization-do/db/schema";
 import type { experimental_createMCPClient as createMCPClient } from "ai";
 import { z } from "zod";
 import type { ToolSelection } from "./ai";
 
 export type MCPTransport = "sse" | "streamable-http";
 
-type BaseMCPServer = {
+export type BaseMCPServer = {
 	id: string;
 	name: string;
-	description: string;
+	description: string | null;
 	url: string;
 	transport: MCPTransport;
 };
@@ -18,9 +17,7 @@ export type DefaultMCPServer = BaseMCPServer & {
 	type: "default";
 };
 
-// For servers from the database
-export type DBMCPServer = typeof mcpServer.$inferSelect;
-export type CustomMCPServer = DBMCPServer & { type: "custom" };
+export type CustomMCPServer = BaseMCPServer & { type: "custom" };
 
 // A unified type for use throughout the app
 export type AppMCPServer = DefaultMCPServer | CustomMCPServer;

@@ -9,175 +9,147 @@ import type {
 	ChatRoomType,
 	EmojiUsage,
 	LanguageStyle,
+	MCPTransport,
 	Tone,
 	Verbosity,
 	WorkflowSteps,
 } from "@shared/types";
-import type { MCPTransport } from "@shared/types/mcp";
 import { sql } from "drizzle-orm";
-import { primaryKey, sqliteTable } from "drizzle-orm/sqlite-core";
+import {
+	integer,
+	primaryKey,
+	sqliteTable,
+	text,
+} from "drizzle-orm/sqlite-core";
 import { nanoid } from "nanoid";
 
 // TODO: Check if i should index some things
 
-export const chatRoom = sqliteTable("chat_room", (t) => ({
-	id: t
-		.text("id")
+export const chatRoom = sqliteTable("chat_room", {
+	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => nanoid(36)),
-	name: t.text("name").notNull(),
-	type: t.text("type").$type<ChatRoomType>().notNull(),
-	organizationId: t.text("organization_id").notNull(),
-	createdAt: t
-		.integer("created_at", { mode: "number" })
+	name: text("name").notNull(),
+	type: text("type").$type<ChatRoomType>().notNull(),
+	organizationId: text("organization_id").notNull(),
+	createdAt: integer("created_at", { mode: "number" })
 		.notNull()
 		.default(sql`(unixepoch() * 1000)`),
-}));
+});
 
 export const chatRoomMember = sqliteTable(
 	"chat_room_member",
-	(t) => ({
-		id: t.text("id").notNull(), // User ID or Agent ID
-		roomId: t
-			.text("room_id")
+	{
+		id: text("id").notNull(), // User ID or Agent ID
+		roomId: text("room_id")
 			.notNull()
 			.references(() => chatRoom.id, { onDelete: "cascade" }),
-		type: t.text("type").$type<ChatRoomMemberType>().notNull(),
-		role: t.text("role").$type<ChatRoomMemberRole>().notNull(),
-		name: t.text("name").notNull(),
-		email: t.text("email").notNull(),
-		image: t.text("image"),
-		createdAt: t
-			.integer("created_at", { mode: "number" })
+		type: text("type").$type<ChatRoomMemberType>().notNull(),
+		role: text("role").$type<ChatRoomMemberRole>().notNull(),
+		name: text("name").notNull(),
+		email: text("email").notNull(),
+		image: text("image"),
+		createdAt: integer("created_at", { mode: "number" })
 			.notNull()
 			.default(sql`(unixepoch() * 1000)`),
-	}),
+	},
 	(t) => [primaryKey({ columns: [t.roomId, t.id] })],
 );
 
-export const chatMessage = sqliteTable("chat_message", (t) => ({
-	id: t.integer("id").primaryKey({ autoIncrement: true }),
-	status: t
-		.text("status")
+export const chatMessage = sqliteTable("chat_message", {
+	id: integer("id").primaryKey({ autoIncrement: true }),
+	status: text("status")
 		.$type<ChatMessageStatus>()
 		.notNull()
 		.default("completed"),
-	mentions: t
-		.text("mentions", { mode: "json" })
-		.$type<ChatMentions>()
-		.notNull(),
-	parts: t
-		.text("parts", { mode: "json" })
+	mentions: text("mentions", { mode: "json" }).$type<ChatMentions>().notNull(),
+	parts: text("parts", { mode: "json" })
 		.$type<ChatRoomMessagePartial["parts"]>() // TODO: Add versioning to columns that are json type
 		.notNull()
 		.default(sql`('[]')`),
-	memberId: t.text("member_id").notNull(),
-	createdAt: t
-		.integer("created_at", { mode: "number" })
+	memberId: text("member_id").notNull(),
+	createdAt: integer("created_at", { mode: "number" })
 		.notNull()
 		.default(sql`(unixepoch() * 1000)`),
-	metadata: t
-		.text("metadata", { mode: "json" })
+	metadata: text("metadata", { mode: "json" })
 		.$type<ChatMessageMetadata>()
 		.notNull(),
-	threadMetadata: t
-		.text("thread_metadata", {
-			mode: "json",
-		})
-		.$type<ChatMessageThreadMetadata>(),
-	roomId: t
-		.text("room_id")
+	threadMetadata: text("thread_metadata", {
+		mode: "json",
+	}).$type<ChatMessageThreadMetadata>(),
+	roomId: text("room_id")
 		.notNull()
 		.references(() => chatRoom.id, { onDelete: "cascade" }),
-	threadId: t.integer("thread_id"),
-}));
+	threadId: integer("thread_id"),
+});
 
-export const agent = sqliteTable("agent", (t) => ({
-	id: t
-		.text("id")
+export const agent = sqliteTable("agent", {
+	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => nanoid(36)),
-	email: t.text("email").notNull().unique(),
+	email: text("email").notNull().unique(),
 	// Identity
-	name: t.text("name").notNull(),
-	image: t.text("image").notNull(),
-	description: t.text("description").notNull(),
+	name: text("name").notNull(),
+	image: text("image").notNull(),
+	description: text("description").notNull(),
 	// Personality
-	tone: t.text("tone").$type<Tone>().notNull(),
-	verbosity: t.text("verbosity").$type<Verbosity>().notNull(),
-	emojiUsage: t.text("emoji_usage").$type<EmojiUsage>().notNull(),
-	languageStyle: t.text("language_style").$type<LanguageStyle>().notNull(),
+	tone: text("tone").$type<Tone>().notNull(),
+	verbosity: text("verbosity").$type<Verbosity>().notNull(),
+	emojiUsage: text("emoji_usage").$type<EmojiUsage>().notNull(),
+	languageStyle: text("language_style").$type<LanguageStyle>().notNull(),
 	// Metadata
-	createdAt: t
-		.integer("created_at")
-		.notNull()
-		.default(sql`(unixepoch() * 1000)`),
-}));
+	createdAt: integer("created_at").notNull().default(sql`(unixepoch() * 1000)`),
+});
 
-export const workflows = sqliteTable("workflows", (t) => ({
-	id: t
-		.text("id")
+export const workflows = sqliteTable("workflows", {
+	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => nanoid(36)), // Workflow unique ID
-	agentId: t.text("agent_id").notNull(),
-	chatRoomId: t
-		.text("chat_room_id")
+	agentId: text("agent_id").notNull(),
+	chatRoomId: text("chat_room_id")
 		.notNull()
 		.references(() => chatRoom.id, { onDelete: "cascade" }),
-	goal: t.text("goal").notNull(),
-	steps: t.text("steps", { mode: "json" }).$type<WorkflowSteps>().notNull(),
-	scheduleExpression: t.text("schedule_expression").notNull(), // e.g., CRON or ISO
-	nextExecutionTime: t.integer("next_execution_time").notNull(), // Timestamp ms
-	lastExecutionTime: t.integer("last_execution_time"), // Timestamp ms
-	isActive: t.integer("is_active", { mode: "boolean" }).notNull(),
-	isRecurring: t.integer("is_recurring", { mode: "boolean" }).notNull(),
-	createdAt: t
-		.integer("created_at")
-		.notNull()
-		.default(sql`(unixepoch() * 1000)`),
-	updatedAt: t
-		.integer("updated_at")
-		.notNull()
-		.default(sql`(unixepoch() * 1000)`),
-}));
+	goal: text("goal").notNull(),
+	steps: text("steps", { mode: "json" }).$type<WorkflowSteps>().notNull(),
+	scheduleExpression: text("schedule_expression").notNull(), // e.g., CRON or ISO
+	nextExecutionTime: integer("next_execution_time").notNull(), // Timestamp ms
+	lastExecutionTime: integer("last_execution_time"), // Timestamp ms
+	isActive: integer("is_active", { mode: "boolean" }).notNull(),
+	isRecurring: integer("is_recurring", { mode: "boolean" }).notNull(),
+	createdAt: integer("created_at").notNull().default(sql`(unixepoch() * 1000)`),
+	updatedAt: integer("updated_at").notNull().default(sql`(unixepoch() * 1000)`),
+});
 
-export const document = sqliteTable("document", (t) => ({
-	id: t
-		.text("id")
+export const document = sqliteTable("document", {
+	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => nanoid(36)),
-	roomId: t
-		.text("room_id")
+	roomId: text("room_id")
 		.notNull()
 		.references(() => chatRoom.id, { onDelete: "no action" }),
-	title: t.text("title").notNull(),
-	content: t.text("content").notNull(),
-	createdAt: t
-		.integer("created_at", { mode: "number" })
+	title: text("title").notNull(),
+	content: text("content").notNull(),
+	createdAt: integer("created_at", { mode: "number" })
 		.notNull()
 		.default(sql`(unixepoch() * 1000)`),
-	createdByMemberId: t.text("created_by_member_id").notNull(),
-	createdByMemberType: t
-		.text("created_by_member_type")
+	createdByMemberId: text("created_by_member_id").notNull(),
+	createdByMemberType: text("created_by_member_type")
 		.$type<ChatRoomMemberType>()
 		.notNull(),
-}));
+});
 
-export const mcpServer = sqliteTable("mcp_server", (t) => ({
-	id: t
-		.text("id")
+export const mcpServer = sqliteTable("mcp_server", {
+	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => nanoid(36)),
-	name: t.text("name").notNull(),
-	description: t.text("description"),
-	url: t.text("url").notNull(),
-	transport: t.text("transport").$type<MCPTransport>().notNull(),
-	createdAt: t
-		.integer("created_at", { mode: "number" })
+	name: text("name").notNull(),
+	description: text("description"),
+	url: text("url").notNull(),
+	transport: text("transport").$type<MCPTransport>().notNull(),
+	createdAt: integer("created_at", { mode: "number" })
 		.notNull()
 		.default(sql`(unixepoch() * 1000)`),
-	updatedAt: t
-		.integer("updated_at", { mode: "number" })
+	updatedAt: integer("updated_at", { mode: "number" })
 		.notNull()
 		.default(sql`(unixepoch() * 1000)`),
-}));
+});
